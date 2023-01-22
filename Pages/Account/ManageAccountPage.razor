@@ -1,0 +1,98 @@
+﻿@page "/Account/Manage"
+
+@using F1FantasyLibrary.Services
+@using F1FantasyLibrary.Models
+@using Newtonsoft.Json
+
+@inject ApiService API
+@inject DatabaseService db
+@inject AppStateService appState
+
+<h1 style="text-align: center">Account management</h1>
+<br />
+
+@if (appState.isLoggedIn)
+{
+    @if (user is not null)
+    {
+        <form id="manage-account">
+
+            <label for="accountNumber">Account number:</label>
+            <label id="accountNumber">@user.UserID</label>
+            <br /><br>
+
+            <label for="accountFullName">Full name:</label><br />
+            <input type="text" id="accountFullName" class="manage-account-input" @bind="user.Name" />
+            <button>Edit</button>
+            <br /><br />
+
+
+            <label for="accountUsername">Username:</label><br />
+            <input type="text" id="accountUsername" class="manage-account-input" @bind="user.Username" />
+            <button>Edit</button>
+            <br /><br />
+
+            <label for="accountPassword">Password</label><br />
+            <input type="password" id="accountPassword" class="manage-account-input" @bind="user.Password" />
+            <button>Edit</button>
+            <br /><br />
+
+            <label for="selectFavDriver">Favourite Driver</label><br />
+            <select id="selectFavDriver" class="manage-account-input" @bind="user.FavouriteDriver">
+                <option>---Select driver---</option>
+                @if (drivers is not null)
+                {
+                    @foreach (var driver in drivers.MRData.StandingsTable.StandingsLists[0].DriverStandings)
+                    {
+                        <option value="@driver.Driver.FullName" selected="@(driver.Driver.FullName == user.FavouriteDriver)">@driver.Driver.FullName</option>
+                    }
+                }
+            </select>
+            <button>Edit</button>
+            <br /><br />
+
+            <label for="selectFavConstructor">Favourite Driver</label><br />
+            <select id="selectFavConstructor" class="manage-account-input" @bind="user.FavouriteConstructor">
+                <option>---Select constructor---</option>
+                @if (constructors is not null)
+                {
+                    @foreach (var constructor in constructors.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
+                    {
+                        <option value="@constructor.Constructor.Name" selected="@(constructor.Constructor.Name == user.FavouriteConstructor)">@constructor.Constructor.Name</option>
+                    }
+                }
+            </select>
+            <button>Edit</button>
+            <br /><br />
+
+            <button type="submit" style="width:20%; float:right" @onclick="UpdateAccount">Save</button>
+        </form>
+    }
+    else
+    {
+        <a>Loading...</a>
+    }
+}
+
+
+@code {
+    DriverStandingsModel.Root? drivers;
+    ConstructorStandingsModel.Root? constructors;
+    UserModel user = new();
+
+    protected override async Task OnInitializedAsync ()
+    {
+        user = appState.currentUser;
+
+        var driverJson = await API.GetDriverStandingsAsync(DateTime.Now.Year.ToString());
+        drivers = JsonConvert.DeserializeObject<DriverStandingsModel.Root>(driverJson);
+
+        var constructorJson = await API.GetConstructorStandingsAsync(DateTime.Now.Year.ToString());
+        constructors = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(constructorJson);
+    }
+
+    private async void UpdateAccount ()
+    {
+        user = await db.UpdateUserAsync(user);
+    }
+}

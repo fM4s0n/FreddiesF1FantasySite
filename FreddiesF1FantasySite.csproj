@@ -11,9 +11,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\Account\" />
+    <Folder Include="Data\" />
     <Folder Include="Pages\Fantasy\" />
     <Folder Include="Pages\Standings\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 
 </Project>

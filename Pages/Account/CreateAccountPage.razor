@@ -1,0 +1,75 @@
+﻿@page "/Account/Create"
+
+@using F1FantasyLibrary.Services
+@using F1FantasyLibrary.Models
+@using Newtonsoft.Json
+
+@inject ApiService API
+@inject DatabaseService db
+@inject AppStateService appState
+
+<h1 style="text-align: center">Create account</h1>
+
+<form id="create-account">
+    <div>
+        <label for="accountFullName">Full name:</label>
+        <input type="text" id="accountFullName" class="create-account-input" @bind="user.Name" />
+        <br /><br />
+
+        <label for="accountUsername">Username:</label>
+        <input type="text" id="accountUsername" class="create-account-input" @bind="user.Username" />
+        <br /><br />
+
+        <label for="accountPassword">Password</label>
+        <input type="password" id="accountPassword" class="create-account-input" @bind="user.Password" />
+        <br /><br />
+
+        <label for="selectFavDriver">Favourite Driver</label>
+        <select id="selectFavDriver" class="create-account-input" @bind="@user.FavouriteDriver">
+            <option>---Select driver---</option>
+
+            @if (drivers is not null)
+            {
+                @foreach (var driver in drivers.MRData.StandingsTable.StandingsLists[0].DriverStandings)
+                {
+                    <option value="@driver.Driver.FullName">@driver.Driver.FullName</option>
+                }
+            }
+        </select> <br /><br />
+
+        <label for="selectFavConstructor">Favourite Constructor</label>
+        <select id="selectFavConstructor" class="create-account-input" @bind="user.FavouriteConstructor">
+            <option>---Select constructor---</option>
+
+            @if (constructors is not null)
+            {
+                @foreach (var constructor in constructors.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
+                {
+                    <option value="@constructor.Constructor.Name">@constructor.Constructor.Name</option>
+                }
+            }
+        </select><br /><br />
+
+        <button type="submit" style="width:20%; float:right" @onclick="CreateNewUser">Save</button>
+    </div>
+</form>
+
+@code {
+    DriverStandingsModel.Root drivers;
+    ConstructorStandingModel.Root constructors;
+    UserModel user = new();
+
+    protected override async Task OnInitializedAsync ()
+    {
+        var driverJson = await API.GetDriverStandingsAsync(DateTime.Now.Year.ToString());
+        drivers = JsonConvert.DeserializeObject<DriverStandingsModel.Root>(driverJson);
+
+        var constructorJson = await API.GetConstructorStandingsAsync(DateTime.Now.Year.ToString());
+        constructors = JsonConvert.DeserializeObject<ConstructorStandingModel.Root>(constructorJson);
+    }
+
+    private async Task CreateNewUser ()
+    {
+        user = await db.CreateUserAsync(user);
+    }
+}
