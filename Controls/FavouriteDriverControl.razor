@@ -1,0 +1,45 @@
+﻿@using FreddiesF1FantasySite.Services
+@using FreddiesF1FantasySite.Dictionaries
+@using FreddiesF1FantasySite.Models
+@using Newtonsoft.Json
+
+@inject AppStateService appState
+@inject ApiService API
+
+@if (driver is not null)
+{
+    string driverImageURL = GerDriverImage();
+    <div class="favourite-control">
+        <div class="favourite-control-info">
+            <h2><b>@(appState.currentUser.Username)'s Favourite Driver</b></h2>
+            <h4>@appState.currentUser.FavouriteDriver</h4>
+
+            @if (driver.MRData.StandingsTable.StandingsLists.Count() > 0)
+            {
+                <p>Championship position: @driver.MRData.StandingsTable.StandingsLists[0].DriverStandings[0].Position</p>
+                <p>Points: @driver.MRData.StandingsTable.StandingsLists[0].DriverStandings[0].Points</p>
+                <p>Wins: @driver.MRData.StandingsTable.StandingsLists[0].DriverStandings[0].Wins</p>
+            }
+        </div>
+
+        <div class="favourite-control-image">
+            <img class="img favourite-control-image" src="@driverImageURL" />
+        </div>
+    </div>    
+}
+
+@code {
+    DriverResultsModel.Root driver;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string json = await API.GetDriverResultsAsync(DateTime.Now.Year, appState.currentUser.FavouriteDriverId);
+
+        driver = JsonConvert.DeserializeObject<DriverResultsModel.Root>(json);
+    }
+
+    public string GerDriverImage()
+    {
+        return DriverImageDictionary.ConvertDriverName(appState.currentUser.FavouriteDriverId);
+    }
+}

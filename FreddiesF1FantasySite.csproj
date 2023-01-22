@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="Pages\Fantasy\" />
-    <Folder Include="Pages\Standings\" />
   </ItemGroup>
 
   <ItemGroup>

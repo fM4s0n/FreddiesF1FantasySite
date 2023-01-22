@@ -1,9 +1,31 @@
 ﻿@page "/"
 
+@using FreddiesF1FantasySite.Models
+@using FreddiesF1FantasySite.Controls
+@using FreddiesF1FantasySite.Services
+
+@inject AppStateService appState
+
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="twitter-login-container">
+    <div style="flex-grow:15">
+        @if(appState.isLoggedIn)
+        {
+            <FavouriteDriverControl />
+            <FavouriteConstructorControl />
+        }
+        else
+        {
+            <LoginControl />
+        }
+    </div>
 
-Welcome to your new app.
+    <div style="flex-grow:1">
+        <TwitterTimelineControl />
+    </div>
+</div>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code{
+
+}

@@ -1,0 +1,169 @@
+﻿@page "/Standings/Constructors"
+
+@using FreddiesF1FantasySite.Dictionaries
+@using FreddiesF1FantasySite.Models
+@using FreddiesF1FantasySite.Services
+@using Newtonsoft.Json
+@using System.IO
+@using System.Text
+
+@inject ApiService API
+
+<head>
+	<title>Constructor standings</title>
+</head>
+
+<h2 style="text-align:center">Constructor Standings</h2>
+
+<label class="season-select" for="seasonListLabel">Select Season:</label>
+<div class="season-select">
+	<select class="form-control" style="width:75px; height:40px" @bind="@selectedYear" name="seasonListSelect" id="seasonListSelect">
+		@foreach (var season in seasons)
+		{
+			<option value="@season" selected="@(season == DateTime.Now.Year.ToString())">@season</option>
+		}
+	</select>
+	<button class="btn btn-primary" style="margin:10px" @onclick="GetConstructorStandings">Go</button>
+</div>
+
+@*dont display the table if no data yet*@
+@if (constructors != null)
+{
+	//if api try catch catches an exception
+	@if (requestFailed)
+	{
+		<p>Request failed, API may currently be down</p>
+		return;
+	}
+
+	//if api returns no drivers
+	@if (constructors.MRData.Total == "0")
+	{
+		<p>No data to display, the season has not started yet!</p>
+		return;
+	}
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Logo</th>
+				<th class="constructor-table-flag">Nationality</th>
+				<th class="constructor-table-car">Car</th>
+				<th>Pos</th>
+				<th>Constructor</th>
+				<th>Points</th>
+				<th>Wins</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var constructor in constructors.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
+			{
+				//Get constructor logo
+				string logo = GetConstructorLogo(constructor.Constructor.Name);
+				//get car image
+				string car = GetCarImage(constructor.Constructor.Name);
+				string flag = GetConstructorFlag(constructor.Constructor.Nationality);
+
+				<tr>
+					@*team logo, if no image found just display no data*@
+					@if (logo == "No data")
+					{
+						<td>@logo</td>
+					}
+					else
+					{
+						<td><img class="img" id="table-image" src="@logo"></td>
+					}
+
+					@*Team country flag*@
+					@if(flag == "No data")
+					{
+						<td class="constructor-table-flag">@flag</td>
+					}
+					else
+					{
+						<td class="constructor-table-flag"><img class="img" id="table-image" src="@flag"></td>
+					}
+
+					@*car image*@
+					@if (car == "No data")
+					{
+						<td>@car</td>
+					}
+					else
+					{
+						<td class="constructor-table-car"><img class="img" id="table-CarImage" src="@car"></td>
+					}
+
+					<td>@constructor.Position</td>
+					<td>@constructor.Constructor.Name</td>
+					<td>@constructor.Points</td>
+					<td>@constructor.Wins</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+
+@code {
+	private ConstructorStandingsModel.Root constructors;
+
+	string selectedYear = $"{DateTime.Now.Year.ToString()}";
+	bool requestFailed = false;
+	List<string> seasons = new();
+
+	/// <summary>
+	/// On load of the page, get a list of the seasons
+	/// </summary>
+	protected override void OnInitialized()
+	{
+		GetListOfSeasons();
+	}
+
+	/// <summary>
+	/// Get a list of every year from 1950 to the current year
+	/// </summary>
+	private void GetListOfSeasons()
+	{
+		for (int i = 1958; i <= DateTime.Now.Year; i++)
+			seasons.Add(i.ToString());
+		seasons.Reverse();
+	}
+
+	private string GetConstructorLogo(string name)
+	{
+		return ConstructorLogoDictionary.GetLogoURL(name);
+	}
+
+	/// <summary>
+	/// Get image URL for a teams car
+	/// </summary>
+	/// <param name="constructor"></param>
+	/// <returns>Image url if found, "No data" if not</returns>
+	private string GetCarImage(string constructor)
+	{
+		return CarImageDictionary.GetCarImageURL(constructor);
+	}
+
+	private string GetConstructorFlag(string constructor)
+	{
+		return FlagDictionary_Nationality.ConvertNationality(constructor);
+	}
+
+	/// <summary>
+	/// Call API for driver standings
+	/// </summary>
+	/// <returns></returns>
+	public async Task GetConstructorStandings()
+	{
+		string result = await API.GetConstructorStandingsAsync(selectedYear);
+
+		//exception catch
+		if (result == "0")
+			requestFailed = true;
+		//data returned by api
+		else
+			constructors = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(result);
+	}
+}

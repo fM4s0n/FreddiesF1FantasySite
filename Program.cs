@@ -1,4 +1,4 @@
-using FreddiesF1FantasySite.Data;
+using FreddiesF1FantasySite.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -7,7 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
+
+builder.Services.AddSingleton<ApiService>();
+builder.Services.AddSingleton<DatabaseService>();
+builder.Services.AddSingleton<AppStateService>();
 
 var app = builder.Build();
 

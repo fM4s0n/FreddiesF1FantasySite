@@ -1,0 +1,135 @@
+﻿@page "/Standings/Drivers"
+
+@using FreddiesF1FantasySite.Dictionaries
+@using FreddiesF1FantasySite.Services
+@using FreddiesF1FantasySite.Models
+@using Newtonsoft.Json
+@using System.IO
+@using System.Text
+
+@inject ApiService API
+
+<head>
+	<title>Driver standings</title>
+</head>
+
+<h2 style="text-align:center">Driver Standings</h2>
+
+<label class="season-select" for="seasonListLabel">Select Season:</label>
+<div class="season-select">
+	<select class="form-control" style="width:75px; height:40px" @bind="@selectedYear" name="seasonListSelect" id="seasonListSelect">
+		@foreach (var season in seasons)
+		{
+			<option value="@season" selected="@(season == DateTime.Now.Year.ToString())">@season</option>
+		}
+	</select>
+	<button class="btn btn-primary" style="margin:10px" @onclick="GetDriverStandings">@test</button>
+</div>
+
+
+@if (drivers is not null)
+{
+	//if api try catch catches an exception
+	@if (requestFailed)
+	{
+		<p>Request failed, API may currently be down</p>
+		return;
+	}
+
+	//if api returns no drivers
+	@if (drivers.MRData.Total == 0)
+	{
+		<p>No data to display, the season has not started yet!</p>
+		return;
+	}
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Pos</th>
+				<th>Driver</th>
+				<th>Contructor</th>
+				<th>Points</th>
+				<th>Wins</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var driver in drivers.MRData.StandingsTable.StandingsLists[0].DriverStandings)
+			{
+				<tr>
+					<td>@driver.Position</td>
+					
+					@if (GetNationalityImage(driver.Driver.Nationality) == "No data")
+					{
+						<td><p>No image</p> <span>@driver.Driver.FullName</span> </td>
+					}
+					else
+					{
+						<td style="white-space:normal"><img class="img-fluid" id="table-image" style="margin-right:5px" src="@GetNationalityImage(driver.Driver.Nationality)"><span class="driver-fullname" style="white-space:pre">@driver.Driver.FullName</span> <span class="driver-abbreviation">@driver.Driver.Code</span></td>
+					}			
+
+					@if (driver.Constructors.Count == 0)
+					{
+						<td>no data</td>
+					}
+					else
+					{
+						<td>@driver.Constructors[0].Name</td>
+					}
+
+					<td>@driver.Points</td>
+					<td>@driver.Wins</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	private DriverStandingsModel.Root drivers;
+
+	string selectedYear = $"{DateTime.Now.Year.ToString()}";
+	bool requestFailed = false;
+	List<string> seasons = new();
+
+	string test = "Select season";
+
+	/// <summary>
+	/// On load of the page, get a list of the seasons
+	/// </summary>
+	protected override void OnInitialized()
+	{
+		GetListOfSeasons();
+	}
+
+	/// <summary>
+	/// Get a list of every year from 1950 to the current year
+	/// </summary>
+	private void GetListOfSeasons()
+	{
+		for (int i = 1950; i <= DateTime.Now.Year; i++)
+			seasons.Add(i.ToString());
+		seasons.Reverse();
+	}
+
+	private string GetNationalityImage(string nationality)
+	{
+		return FlagDictionary_Nationality.ConvertNationality(nationality);
+	}
+
+	/// <summary>
+	/// Call API for driver standings
+	/// </summary>
+	/// <returns></returns>
+	public async Task GetDriverStandings()
+	{
+		string result = await API.GetDriverStandingsAsync(selectedYear);
+
+		//exception catch
+		if (result == "0")
+			requestFailed = true;
+		//data returned by api
+		else
+			drivers = JsonConvert.DeserializeObject<DriverStandingsModel.Root>(result);
+	}
+}

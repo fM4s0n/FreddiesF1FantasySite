@@ -1,4 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@using FreddiesF1FantasySite.Services
+
+@inherits LayoutComponentBase
+@inject AppStateService appState
 
 <PageTitle>FreddiesF1FantasySite</PageTitle>
 
@@ -9,7 +12,18 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            @*login/logout button*@
+            @if (appState.isLoggedIn)
+            {
+                @*account page*@
+                <a href="/Account/Manage">My Account</a>
+                <a href="/" @onclick="@appState.LogOut">Log out</a>
+                <a>Current user: @appState.currentUser.Username</a>
+            }
+            else
+            {
+                    <a href="/">Log in</a>
+            }	
         </div>
 
         <article class="content px-4">

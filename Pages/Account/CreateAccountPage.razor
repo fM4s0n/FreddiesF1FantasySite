@@ -1,7 +1,7 @@
 ﻿@page "/Account/Create"
 
-@using F1FantasyLibrary.Services
-@using F1FantasyLibrary.Models
+@using FreddiesF1FantasySite.Services
+@using FreddiesF1FantasySite.Models
 @using Newtonsoft.Json
 
 @inject ApiService API
@@ -56,7 +56,7 @@
 
 @code {
     DriverStandingsModel.Root drivers;
-    ConstructorStandingModel.Root constructors;
+    ConstructorStandingsModel.Root constructors;
     UserModel user = new();
 
     protected override async Task OnInitializedAsync ()
@@ -65,7 +65,7 @@
         drivers = JsonConvert.DeserializeObject<DriverStandingsModel.Root>(driverJson);
 
         var constructorJson = await API.GetConstructorStandingsAsync(DateTime.Now.Year.ToString());
-        constructors = JsonConvert.DeserializeObject<ConstructorStandingModel.Root>(constructorJson);
+        constructors = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(constructorJson);
     }
 
     private async Task CreateNewUser ()

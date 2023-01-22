@@ -1,0 +1,45 @@
+﻿@using FreddiesF1FantasySite.Services
+@using FreddiesF1FantasySite.Dictionaries
+@using FreddiesF1FantasySite.Models
+@using Newtonsoft.Json
+
+@inject AppStateService appState
+@inject ApiService API
+
+@if (constructor is not null)
+{
+    string constructorLogoURL = GetConstructorLogo();
+    <div class="favourite-control">
+        <div class="favourite-control-info">
+            <h2><b>@(appState.currentUser.Username)'s Favourite Constructor</b></h2>
+            <h4>@appState.currentUser.FavouriteConstructor</h4>
+
+            @if (constructor.MRData.StandingsTable.StandingsLists.Count() > 0)
+            {
+                <p>Championship position: @constructor.MRData.StandingsTable.StandingsLists[0].ConstructorStandings[0].Position</p>
+                <p>Points: @constructor.MRData.StandingsTable.StandingsLists[0].ConstructorStandings[0].Points</p>
+                <p>Wins: @constructor.MRData.StandingsTable.StandingsLists[0].ConstructorStandings[0].Wins</p>
+            }
+        </div>
+
+        <div class="favourite-control-image">
+            <img class="img favourite-control-image" src="@constructorLogoURL" />
+        </div>
+    </div>
+}
+
+@code {
+    ConstructorStandingsModel.Root constructor;
+
+    protected override async Task OnInitializedAsync ()
+    {
+        string json = await API.GetConstructorResultsAsync(DateTime.Now.Year, appState.currentUser.FavouriteConstructorId);
+
+        constructor = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(json);
+    }
+
+    public string GetConstructorLogo ()
+    {
+        return ConstructorLogoDictionary.GetLogoURL(appState.currentUser.FavouriteConstructor);
+    }
+}
