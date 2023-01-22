@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\F1FantasyLibrary\F1FantasyLibrary.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="Pages\Fantasy\" />
     <Folder Include="Pages\Standings\" />

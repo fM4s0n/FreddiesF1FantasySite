@@ -1,0 +1,71 @@
+﻿@using FreddiesF1FantasySite.Services
+@using FreddiesF1FantasySite.Models
+
+@inject DatabaseService db
+@inject AppStateService appState
+@inject NavigationManager navMan
+
+<head>
+    <title>Login</title>
+</head>
+
+
+<form id="login">
+    <h1 style="text-align:center">Please login</h1>
+
+    <label for="username">Username:</label>
+    <br />
+    <input type="text" class="login-input" name="Username" id="username" placeholder="Username" @bind="usernameEntered" />
+    <br /> <br />
+    <label for="password">Password:</label>
+    <br />
+    <input type="password" class="login-input" name="Password" id="password" placeholder="Password" @bind="passwordEntered" />
+    <br />
+    <a href="/Account/Create" style="float:right"> Don't have an account? Sign up here!</a>
+    <br /><br />
+</form>
+
+
+<div style="width:100%;">
+    <button type="submit" id="submit" class="btn btn-primary" @onclick="CheckLogin">Log in</button>
+    <br />
+</div>
+
+@code {
+    string usernameEntered = "";
+    string passwordEntered = "";
+
+    /// <summary>
+    /// Check if the login details are accurate
+    /// Update login state if passes check
+    /// </summary>
+    private async void CheckLogin ()
+    {
+        List<UserModel> users = new();
+        users = await db.GetUsersAsync();
+
+        if (users.Count > 0)
+        {
+            foreach (UserModel u in users)
+            {
+                if (usernameEntered == u.Username)
+                {
+                    if (passwordEntered == u.Password)
+                    {
+                        appState.LogIn(u);
+                        navMan.NavigateTo("/", true);
+                        break;
+                    }
+                    else
+                    {
+
+                    }
+                }
+                else
+                {
+
+                }
+            }
+        }
+    }
+}
