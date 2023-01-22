@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreddiesF1FantasySite", "FreddiesF1FantasySite.csproj", "{6FDFDAE6-537A-415D-ADE1-A12ED645E36E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F1FantasyLibrary", "..\F1FantasyLibrary\F1FantasyLibrary.csproj", "{601510AA-C5EF-4329-9B05-75E18C6ECE5B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6FDFDAE6-537A-415D-ADE1-A12ED645E36E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FDFDAE6-537A-415D-ADE1-A12ED645E36E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FDFDAE6-537A-415D-ADE1-A12ED645E36E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FDFDAE6-537A-415D-ADE1-A12ED645E36E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{601510AA-C5EF-4329-9B05-75E18C6ECE5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{601510AA-C5EF-4329-9B05-75E18C6ECE5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{601510AA-C5EF-4329-9B05-75E18C6ECE5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{601510AA-C5EF-4329-9B05-75E18C6ECE5B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F33E508D-746B-4424-B28F-96EF2EDC4546}
+	EndGlobalSection
+EndGlobal
