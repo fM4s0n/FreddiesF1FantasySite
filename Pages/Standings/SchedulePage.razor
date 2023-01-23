@@ -9,7 +9,6 @@
 
 <head>
     <title>Season schedule</title>
-    @*<script src="https://kit.fontawesome.com/879ae9e060.js" crossorigin="anonymous"></script>*@
 </head>
 
 <h2 style="text-align:center">Season Schedule</h2>
@@ -30,7 +29,7 @@
             @foreach (SeasonScheduleModel.Race race in season.MRData.RaceTable.Races)
             {
                 string flag = GetCircuitFlag(race.Circuit.Location.Country);
-                string mapURL = $"https://maps.google.com/maps/@?api=1&map_action=map&center={race.Circuit.Location.Lat},{race.Circuit.Location.Long}";
+                string mapURL = $"https://maps.google.com/maps/@?api=1&map_action=map&center={race.Circuit.Location.Lat},{race.Circuit.Location.Long}&basemap=satellite";
 
                 <tr>
                     <td>@race.Round</td>
