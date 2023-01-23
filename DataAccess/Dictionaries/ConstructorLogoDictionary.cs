@@ -1,6 +1,6 @@
-﻿namespace FreddiesF1FantasySite.Dictionaries;
+﻿namespace DataAccess.Dictionaries;
 
-internal class ConstructorLogoDictionary
+public class ConstructorLogoDictionary
 {
     private static readonly Dictionary<string, string> ConstructorURLs = new()
     {

@@ -1,10 +1,11 @@
-﻿@using FreddiesF1FantasySite.Services
-@using FreddiesF1FantasySite.Dictionaries
-@using FreddiesF1FantasySite.Models
+﻿@using DataAccess.Services
+@using DataAccess.Dictionaries
+@using DataAccess.Models
+@using DataAccess.API
 @using Newtonsoft.Json
 
 @inject AppStateService appState
-@inject ApiService API
+@inject ApiService api
 
 @if (constructor is not null)
 {
@@ -33,7 +34,7 @@
 
     protected override async Task OnInitializedAsync ()
     {
-        string json = await API.GetConstructorResultsAsync(DateTime.Now.Year, appState.currentUser.FavouriteConstructorId);
+        string json = await api.GetConstructorResultsAsync(DateTime.Now.Year, appState.currentUser.FavouriteConstructorId);
 
         constructor = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(json);
     }

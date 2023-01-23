@@ -1,6 +1,6 @@
-﻿using FreddiesF1FantasySite.Models;
+﻿using DataAccess.Models;
 
-namespace FreddiesF1FantasySite.Services;
+namespace DataAccess.Database;
 
 public class DatabaseService
 {

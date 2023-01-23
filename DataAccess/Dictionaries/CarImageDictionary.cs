@@ -1,6 +1,6 @@
-﻿namespace FreddiesF1FantasySite.Dictionaries;
+﻿namespace DataAccess.Dictionaries;
 
-internal class CarImageDictionary
+public class CarImageDictionary
 {
     private static readonly Dictionary<string, string> CarImageURLs = new()
     {

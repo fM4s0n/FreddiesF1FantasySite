@@ -5,7 +5,7 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreddiesF1FantasySite", "FantasyF1BlazorSite\FreddiesF1FantasySite.csproj", "{6FDFDAE6-537A-415D-ADE1-A12ED645E36E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{D37423D4-9F08-4D32-BDA9-B6B3AA4A60A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{D37423D4-9F08-4D32-BDA9-B6B3AA4A60A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

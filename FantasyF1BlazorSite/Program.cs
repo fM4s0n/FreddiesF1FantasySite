@@ -1,6 +1,8 @@
-using FreddiesF1FantasySite.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using DataAccess.API;
+using DataAccess.Database;
+using DataAccess.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

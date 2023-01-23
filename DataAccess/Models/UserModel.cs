@@ -1,7 +1,6 @@
-﻿using FreddiesF1FantasySite.Dictionaries;
-using FreddiesF1FantasySite.Models;
+﻿using DataAccess.Dictionaries;
 
-namespace FreddiesF1FantasySite.Models;
+namespace DataAccess.Models;
 
 public class UserModel
 {

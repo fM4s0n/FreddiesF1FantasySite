@@ -1,6 +1,6 @@
-﻿namespace FreddiesF1FantasySite.Dictionaries;
+﻿namespace DataAccess.Dictionaries;
 
-internal class FlagDictionary_CountryName
+public class FlagDictionary_CountryName
 {
     private static readonly Dictionary<string, string> Countries = new()
     {

@@ -1,4 +1,4 @@
-﻿namespace FreddiesF1FantasySite.Models;
+﻿namespace DataAccess.Models;
 
 public class DriverStandingsModel
 {

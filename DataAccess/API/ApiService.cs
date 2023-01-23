@@ -1,11 +1,10 @@
-﻿namespace FreddiesF1FantasySite.Services;
+﻿namespace DataAccess.API;
 
 public class ApiService
-{
-    /// <summary>
-    /// Gets current driver standings as of most recent race
-    /// </summary>
-    ///  <returns>Json file or error message</returns>
+{/// <summary>
+ /// Gets current driver standings as of most recent race
+ /// </summary>
+ ///  <returns>Json file or error message</returns>
     public async Task<string> GetDriverStandingsAsync (string year)
     {
         string result;

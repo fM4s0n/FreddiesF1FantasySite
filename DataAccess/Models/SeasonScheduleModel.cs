@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace FreddiesF1FantasySite.Models;
+namespace DataAccess.Models;
 
 public class SeasonScheduleModel
 {
