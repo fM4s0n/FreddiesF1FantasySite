@@ -177,3 +177,12 @@ a, .btn-link {
     height: auto;
     border-radius: 15px;
 }
+
+.fantasy-team-home-control {
+    background-color:lightblue;
+    max-width: 500px;
+    height: auto;
+    border-radius: 15px;
+    margin:15px;
+    padding:15px;
+}

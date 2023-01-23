@@ -4,11 +4,40 @@
 @using DataAccess.API
 @using DataAccess.Models
 @using DataAccess.Services
+@using FreddiesF1FantasySite.Controls
 
 @inject AppStateService appState
 
-<h3>FantasyHomePage</h3>
+<h2 style="text-align:center">Fantasy Home</h2>
+
+<h3>My Teams</h3>
+@if(teams is not null)
+{
+    @foreach (FantasyTeamModel team in teams)
+    {
+        <div class="fantasy-team-home-control">
+            <p>Fantasy Team name</p>
+            <img class="img" src="" />
+            <img class="img" src="" />
+            <img class="img" src="" />
+            <img class="img" src="" />
+            <img class="img" src="" />
+            <a href="/Fantasy/ManageTeam">Manage team</a>
+        </div>
+    }
+}
+
+
 
 @code {
+    List<FantasyTeamModel> teams = new();
+    FantasyTeamModel team1 = new();
+    FantasyTeamModel team2 = new();
+
+    protected override void OnInitialized ()
+    {
+        teams.Add(team1);
+        teams.Add(team2);
+    }
 
 }
