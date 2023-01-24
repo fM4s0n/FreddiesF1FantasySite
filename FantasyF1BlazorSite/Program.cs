@@ -14,6 +14,10 @@ builder.Services.AddSingleton<ApiService>();
 builder.Services.AddSingleton<DatabaseService>();
 builder.Services.AddSingleton<AppStateService>();
 
+
+builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
+builder.Services.AddTransient<IUserData, UserData>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

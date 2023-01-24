@@ -6,6 +6,7 @@ public class DriverIdDictionary
     private static readonly Dictionary<string, string> DriverIDs = new()
     {
         {"Alex Albon", "albon"},
+        {"Fernando Alonso", "alonso" },
         {"Lewis Hamilton", "hamilton"}
     };
 
