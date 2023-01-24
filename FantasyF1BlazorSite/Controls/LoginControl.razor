@@ -5,6 +5,7 @@
 @inject DatabaseService db
 @inject AppStateService appState
 @inject NavigationManager navMan
+@inject IUserData userData
 
 <head>
     <title>Login</title>
@@ -43,7 +44,7 @@
     private async void CheckLogin ()
     {
         List<UserModel> users = new();
-        users = await db.GetUsersAsync();
+        users = await userData.GetAllUsers();
 
         if (users.Count > 0)
         {

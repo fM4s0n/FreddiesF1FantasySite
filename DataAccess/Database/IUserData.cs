@@ -4,7 +4,8 @@ namespace DataAccess.Database
 {
     public interface IUserData
     {
-        Task<List<UserModel>> GetUsers ();
+        Task<List<UserModel>> GetAllUsers ();
+        Task<List<UserModel>> GetUser (string Username);
         Task InsertUser (UserModel user);
     }
 }

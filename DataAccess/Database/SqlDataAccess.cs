@@ -9,7 +9,7 @@ public class SqlDataAccess : ISqlDataAccess
 {
     private readonly IConfiguration _config;
 
-    public string ConnectionStringName { get; set; }
+    public string ConnectionStringName { get; set; } = "Default";
 
     public SqlDataAccess (IConfiguration config)
     {

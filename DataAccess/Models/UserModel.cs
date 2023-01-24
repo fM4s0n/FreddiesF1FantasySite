@@ -4,23 +4,14 @@ namespace DataAccess.Models;
 
 public class UserModel
 {
-    private readonly DriverIdDictionary driverIdDictionary = new();
-    private readonly ConstructorIdDictionary constructorIdDictionary = new();
-
     public int UserID { get; set; }
     public string Username { get; set; } = "";
     public string Password { get; set; } = "";
-    public string FullNmae { get; set; } = "";
-    public string FavouriteDriver { get; set; } = "";
-    public string FavouriteDriverId
-    {
-        get { return driverIdDictionary.GetDriverId(FavouriteDriver); }
-    }
-    public string FavouriteConstructor { get; set; } = "";
-    public string FavouriteConstructorId
-    {
-        get { return constructorIdDictionary.GetConstructorID(FavouriteConstructor); }
-    }
+    public string FullName { get; set; } = "";
+    public string FavouriteDriverName { get; set; } = "";
+    public string FavouriteDriverId { get; set; } = "";
+    public string FavouriteConstructorName { get; set; } = "";
+    public string FavouriteConstructorId { get; set; } = "";
 
     //public List<FantasyF1LeagueMembership> FantasyLeagueMemberships { get; set; }
 }

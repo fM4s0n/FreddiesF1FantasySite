@@ -13,7 +13,7 @@
     <div class="favourite-control">
         <div class="favourite-control-info">
             <h2><b>@(appState.currentUser.Username)'s Favourite Constructor</b></h2>
-            <h4>@appState.currentUser.FavouriteConstructor</h4>
+            <h4>@appState.currentUser.FavouriteConstructorName</h4>
 
             @if (constructor.MRData.StandingsTable.StandingsLists.Count() > 0)
             {
@@ -41,6 +41,6 @@
 
     public string GetConstructorLogo ()
     {
-        return ConstructorLogoDictionary.GetLogoURL(appState.currentUser.FavouriteConstructor);
+        return ConstructorLogoDictionary.GetLogoURL(appState.currentUser.FavouriteConstructorId);
     }
 }

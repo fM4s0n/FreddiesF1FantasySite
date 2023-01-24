@@ -11,17 +11,24 @@ public class UserData : IUserData
         _db = db;
     }
 
-    public Task<List<UserModel>> GetUsers ()
+    public Task<List<UserModel>> GetAllUsers ()
     {
         string sql = "SELECT * FROM tblUser";
 
         return _db.LoadData<UserModel, dynamic>(sql, new { });
     }
 
+    public Task<List<UserModel>> GetUser (string Username)
+    {
+        string sql = "SELECT * FROM tblUser WHERE Username = '@Username' ";
+
+        return _db.LoadData<UserModel, dynamic>(sql, new { });
+    }
+
     public Task InsertUser (UserModel user)
     {
-        string sql = @"INSERT INTO tblUser((Username, Password, FullName, FavouriteDriverId, FavouriteConstructorId)
-                       VALUES(@Username, @Password, @FullName, @FavouriteDriverId, @FavouriteConstructorId);";
+        string sql = @"INSERT INTO dbo.tblUser (Username, Password, FullName, FavouriteDriverId, FavouriteConstructorId, FavouriteDriverName, FavouriteConstructorName)
+                       VALUES (@Username, @Password, @FullName, @FavouriteDriverId, @FavouriteConstructorId, @FavouriteDriverName, @FavouriteConstructorName);";
 
         return _db.SaveData(sql, user);
     }

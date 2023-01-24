@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using DataAccess.API;
 using DataAccess.Database;
 using DataAccess.Services;
+using DataAccess.Dictionaries;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +14,8 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<ApiService>();
 builder.Services.AddSingleton<DatabaseService>();
 builder.Services.AddSingleton<AppStateService>();
-
+builder.Services.AddSingleton<DriverIdDictionary>();
+builder.Services.AddSingleton<ConstructorIdDictionary>();
 
 builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddTransient<IUserData, UserData>();

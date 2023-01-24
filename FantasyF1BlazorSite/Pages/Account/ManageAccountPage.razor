@@ -24,7 +24,7 @@
             <br /><br>
 
             <label for="accountFullName">Full name:</label><br />
-            <input type="text" id="accountFullName" class="manage-account-input" @bind="user.Name" />
+            <input type="text" id="accountFullName" class="manage-account-input" @bind="user.FullName" />
             <button>Edit</button>
             <br /><br />
 
@@ -40,27 +40,27 @@
             <br /><br />
 
             <label for="selectFavDriver">Favourite Driver</label><br />
-            <select id="selectFavDriver" class="manage-account-input" @bind="user.FavouriteDriver">
+            <select id="selectFavDriver" class="manage-account-input" @bind="user.FavouriteDriverName">
                 <option>---Select driver---</option>
                 @if (drivers is not null)
                 {
                     @foreach (var driver in drivers.MRData.StandingsTable.StandingsLists[0].DriverStandings)
                     {
-                        <option value="@driver.Driver.FullName" selected="@(driver.Driver.FullName == user.FavouriteDriver)">@driver.Driver.FullName</option>
+                        <option value="@driver.Driver.FullName" selected="@(driver.Driver.FullName == user.FavouriteDriverName)">@driver.Driver.FullName</option>
                     }
                 }
             </select>
             <button>Edit</button>
             <br /><br />
 
-            <label for="selectFavConstructor">Favourite Driver</label><br />
-            <select id="selectFavConstructor" class="manage-account-input" @bind="user.FavouriteConstructor">
+            <label for="selectFavConstructor">Favourite Constructor</label><br />
+            <select id="selectFavConstructor" class="manage-account-input" @bind="user.FavouriteConstructorId">
                 <option>---Select constructor---</option>
                 @if (constructors is not null)
                 {
                     @foreach (var constructor in constructors.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
                     {
-                        <option value="@constructor.Constructor.Name" selected="@(constructor.Constructor.Name == user.FavouriteConstructor)">@constructor.Constructor.Name</option>
+                        <option value="@constructor.Constructor.Name" selected="@(constructor.Constructor.Name == user.FavouriteConstructorName)">@constructor.Constructor.Name</option>
                     }
                 }
             </select>

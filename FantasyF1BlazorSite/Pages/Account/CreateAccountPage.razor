@@ -5,17 +5,21 @@
 @using DataAccess.Database
 @using DataAccess.Models
 @using Newtonsoft.Json
+@using DataAccess.Dictionaries;
 
 @inject ApiService API
 @inject DatabaseService db
+@inject IUserData userData
 @inject AppStateService appState
+@inject DriverIdDictionary driverIds
+@inject ConstructorIdDictionary constructorIds
 
 <h1 style="text-align: center">Create account</h1>
 
 <form id="create-account">
     <div>
         <label for="accountFullName">Full name:</label>
-        <input type="text" id="accountFullName" class="create-account-input" @bind="user.Name" />
+        <input type="text" id="accountFullName" class="create-account-input" @bind="user.FullName" />
         <br /><br />
 
         <label for="accountUsername">Username:</label>
@@ -27,7 +31,7 @@
         <br /><br />
 
         <label for="selectFavDriver">Favourite Driver</label>
-        <select id="selectFavDriver" class="create-account-input" @bind="@user.FavouriteDriver">
+        <select id="selectFavDriver" class="create-account-input" @bind="@user.FavouriteDriverName">
             <option>---Select driver---</option>
 
             @if (drivers is not null)
@@ -40,7 +44,7 @@
         </select> <br /><br />
 
         <label for="selectFavConstructor">Favourite Constructor</label>
-        <select id="selectFavConstructor" class="create-account-input" @bind="user.FavouriteConstructor">
+        <select id="selectFavConstructor" class="create-account-input" @bind="@user.FavouriteConstructorName">
             <option>---Select constructor---</option>
 
             @if (constructors is not null)
@@ -70,8 +74,16 @@
         constructors = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(constructorJson);
     }
 
+    private void GetApiIds()
+    {
+        user.FavouriteDriverId = driverIds.GetDriverId(user.FavouriteDriverName);
+        user.FavouriteConstructorId = constructorIds.GetConstructorID(user.FavouriteConstructorName);
+    }
+
     private async Task CreateNewUser ()
     {
-        user = await db.CreateUserAsync(user);
+        GetApiIds();
+
+        await userData.InsertUser(user);
     }
 }

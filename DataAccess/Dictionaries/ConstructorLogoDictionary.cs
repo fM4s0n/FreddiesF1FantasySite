@@ -4,7 +4,7 @@ public class ConstructorLogoDictionary
 {
     private static readonly Dictionary<string, string> ConstructorURLs = new()
     {
-        {"Alfa Romeo", "https://cdn-7.motorsport.com/images/mgl/6xEeP710/s500/neuer-FullNmae-alfa-romeo-sauber--2-2.webp"},
+        {"Alfa Romeo", "https://cdn-7.motorsport.com/images/mgl/6xEeP710/s500/neuer-FullName-alfa-romeo-sauber--2-2.webp"},
         {"AlphaTauri", "https://cdn-5.motorsport.com/images/mgl/Y99JQR8Y/s500/scuderia-alphatauri-f1-logo-1.webp"},
         {"Alpine F1 Team", "https://cdn-3.motorsport.com/images/mgl/2y39NBX6/s500/alpine-f1-team-logo-1.webp"},
         {"Aston Martin", "https://cdn-9.motorsport.com/images/mgl/YW745JBY/s500/aston-martin-cognizant-f1-team-1.webp"},
