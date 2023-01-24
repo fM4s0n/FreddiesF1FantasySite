@@ -7,5 +7,6 @@ namespace DataAccess.Database
         Task<List<UserModel>> GetAllUsers ();
         Task<List<UserModel>> GetUser (string Username);
         Task InsertUser (UserModel user);
+        Task UpdateUserDetails (UserModel user);
     }
 }

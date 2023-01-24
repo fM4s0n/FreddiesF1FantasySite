@@ -32,4 +32,14 @@ public class UserData : IUserData
 
         return _db.SaveData(sql, user);
     }
+
+    public Task UpdateUserDetails (UserModel user)
+    {
+        string sql = @"UPDATE dbo.tblUser SET Username = @Username, Password = @Password, FullName = @FullName,
+                       FavouriteDriverId = @FavouriteDriverId, FavouriteConstructorId = @FavouriteConstructorId,
+                       FavouriteDriverName = @FavouriteDriverName, FavouriteConstructorName = @FavouriteConstructorName
+                       WHERE Username = @Username";
+
+        return _db.SaveData(sql, user);
+    }
 }

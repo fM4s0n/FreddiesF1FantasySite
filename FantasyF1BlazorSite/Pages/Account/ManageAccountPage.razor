@@ -9,6 +9,7 @@
 @inject ApiService API
 @inject DatabaseService db
 @inject AppStateService appState
+@inject IUserData userData;
 
 <h1 style="text-align: center">Account management</h1>
 <br />
@@ -95,6 +96,8 @@
 
     private async void UpdateAccount ()
     {
-        user = await db.UpdateUserAsync(user);
+        await userData.UpdateUserDetails(user);
+        
+        //refresh user info on page
     }
 }
