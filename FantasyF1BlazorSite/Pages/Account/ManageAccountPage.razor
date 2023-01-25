@@ -5,11 +5,14 @@
 @using DataAccess.Database
 @using DataAccess.Models
 @using Newtonsoft.Json
+@using DataAccess.Dictionaries;
 
 @inject ApiService API
 @inject DatabaseService db
 @inject AppStateService appState
 @inject IUserData userData;
+@inject DriverIdDictionary driverIds
+@inject ConstructorIdDictionary constructorIds
 
 <h1 style="text-align: center">Account management</h1>
 <br />
@@ -94,8 +97,16 @@
         constructors = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(constructorJson);
     }
 
+    private void GetApiIds()
+    {
+        user.FavouriteDriverId = driverIds.GetDriverId(user.FavouriteDriverName);
+        user.FavouriteConstructorId = constructorIds.GetConstructorID(user.FavouriteConstructorName);
+    }
+
     private async void UpdateAccount ()
     {
+        GetApiIds();
+
         await userData.UpdateUserDetails(user);
         
         //refresh user info on page
