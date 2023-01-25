@@ -8,7 +8,7 @@ namespace DataAccess.Models.Fantasy;
 /// </summary>
 public class TeamRaceEntryModel
 {
-    public int TeamRaceEntryId { get; set; }
+    public int TeamRaceEntryId { get; set; } // should ids be GUID??
 
     public int Season { get; set; }
 

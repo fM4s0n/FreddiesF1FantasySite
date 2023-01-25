@@ -9,11 +9,11 @@
 /// </summary>
 public class FantasyTeamModel
 {
-    public int FantasyTeamId { get; set; } = 0;
+    public int FantasyTeamId { get; set; }
 
     public string FantasyTeamName { get; set; } = string.Empty;
 
-    public int TeamOwnerUserId { get; set; } = 0;
+    public int TeamOwnerUserId { get; set; }
 
     public string ConstructorId { get; set; } = string.Empty;
 
@@ -29,5 +29,5 @@ public class FantasyTeamModel
 
     public double TeamBudgetRemaining { get; set; } = 100.0;
 
-    public double TeamValue { get; set; } = 0;
+    public double TeamValue { get; set; }
 }
