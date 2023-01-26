@@ -2,6 +2,9 @@
 
 namespace DataAccess.Models;
 
+/// <summary>
+/// 
+/// </summary>
 public class UserModel
 {
     public int UserID { get; set; }
@@ -21,10 +24,11 @@ public class UserModel
     public string FavouriteConstructorName { get; set; } = "";
 
     public string FavouriteConstructorId { get; set; } = "";
-
-    //public List<FantasyF1LeagueMembership> FantasyLeagueMemberships { get; set; }
 }
 
+/// <summary>
+/// 
+/// </summary>
 public enum AccountLevels
 {
     Standard,

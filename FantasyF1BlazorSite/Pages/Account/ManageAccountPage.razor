@@ -28,7 +28,7 @@
             <br /><br>
 
             <label>Account level</label>
-            <select id="manageAccountAccountlevel" class="manage-account-input">
+            <select id="manageAccountAccountlevel" class="manage-account-input" @bind="user.AccountLevel">
                 <option selected="@user.AccountLevel">Standard</option>
 
                 <option selected="@user.AccountLevel">Pro</option>
@@ -38,7 +38,6 @@
                 }
             </select>
             <br /><br />
-
 
             <label for="accountUsername">Username:</label><br />
             <input type="text" id="accountUsername" class="manage-account-input" @bind="user.Username" />

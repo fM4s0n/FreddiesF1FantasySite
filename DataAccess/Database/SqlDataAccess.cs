@@ -24,7 +24,7 @@ public class SqlDataAccess : ISqlDataAccess
     /// <param name="sql"></param>
     /// <param name="parameters"></param>
     /// <returns></returns>
-    public async Task<List<T>> LoadData<T, U> (string sql, U parameters)
+    public async Task<List<T>> LoadData<T, Params> (string sql, Params parameters)
     {
         string connectionString = _config.GetConnectionString(ConnectionStringName);
 
