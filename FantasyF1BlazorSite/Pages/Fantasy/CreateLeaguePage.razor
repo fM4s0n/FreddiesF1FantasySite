@@ -1,0 +1,37 @@
+﻿@page "/Fantasy/CreateLeague"
+
+@using DataAccess.Models.Fantasy
+@using DataAccess.Models
+@using DataAccess.Database
+@using DataAccess.API
+@using DataAccess.Services
+
+@inject ILeagueData leagueData
+@inject ApiService api
+@inject AppStateService appState
+@inject NavigationManager navMan
+
+<h3>Create a new Fantasy League</h3>
+
+<label>League name</label>
+<input @bind="league.LeagueName"/>
+
+
+@code {
+    UserModel user = new();
+    FantasyLeagueModel league = new();
+
+    protected override void OnInitialized ()
+    {
+        user = appState.currentUser;
+    }
+
+    private void OnSubmit()
+    {
+        league.LeagueOwnerId = user.UserID;
+
+        leagueData.InsertLeague(league);
+
+        navMan.NavigateTo("/Fantasy/Home", true);
+    }
+}

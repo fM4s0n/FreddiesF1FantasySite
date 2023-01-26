@@ -10,10 +10,14 @@ public class DriverTeamMembership
 
     public int TeamId { get; set; }
 
+    //Api driver id
     public string DriverId { get; set; } = string.Empty;
 
     public bool CurrentlySelected { get; set; }
 
     public int PointsScoredForTeam { get; set; }
+
     public double PurchasedValue { get; set; }
+
+    public double CurrentValue { get; set; }
 }

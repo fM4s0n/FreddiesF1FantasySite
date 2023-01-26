@@ -1,5 +1,17 @@
-﻿<h3>ManageLeaguePage</h3>
+﻿@page "/Fantasy/ManageLeague/{passedLeagueId:int}"
+
+@using DataAccess.Database
+@using DataAccess.API
+@using DataAccess.Services
+
+@inject UserData userdata
+@inject AppStateService appState
+
+<h3>ManageLeaguePage</h3>
 
 @code {
+    [Parameter]
+    public int passedLeagueId { get; set; }
 
+    
 }

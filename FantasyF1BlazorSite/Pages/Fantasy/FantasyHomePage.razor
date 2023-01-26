@@ -12,7 +12,8 @@
 <h2 style="text-align:center">Fantasy Home</h2>
 
 <div>
-    <h3>My Teams</h3>
+    <div>
+        <h3>My Teams</h3>
         @if(teams is not null)
         {
             @foreach (FantasyTeamModel team in teams)
@@ -28,9 +29,20 @@
                 </div>
             }
         }
-    <h3>My Leagues</h3>
+    </div>
+    <div>
+        <h3>My Leagues</h3>
 
+        <a href="/Fantasy/CreateLeague">Create a new League</a>
 
+        @if(leagues is not null)
+        {
+            @foreach(FantasyLeagueModel league in leagues)
+            {
+                <a href="/Fantasy/ManageLeague/LeagueId=(@league.LeagueId)">Manage League</a>
+            }
+        }
+    </div>
 </div>
 
 
@@ -41,6 +53,8 @@
     List<FantasyTeamModel> teams = new();
     FantasyTeamModel team1 = new();
     FantasyTeamModel team2 = new();
+
+    List<FantasyLeagueModel> leagues = new();
 
     protected override void OnInitialized ()
     {
