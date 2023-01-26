@@ -1,31 +1,39 @@
 ﻿@page "/Fantasy/Home"
 
-@    using DataAccess.Database
-@    using DataAccess.API
-@    using DataAccess.Models
-@    using DataAccess.Services
-@    using FreddiesF1FantasySite.Controls
+@using DataAccess.Database
+@using DataAccess.API
+@using DataAccess.Models
+@using DataAccess.Models.Fantasy
+@using DataAccess.Services
+@using FreddiesF1FantasySite.Controls
 
 @inject AppStateService appState
 
 <h2 style="text-align:center">Fantasy Home</h2>
 
-<h3>My Teams</h3>
-@if(teams is not null)
-{
-    @foreach (FantasyTeamModel team in teams)
-    {
-        <div class="fantasy-team-home-control">
-            <p>Fantasy Team name</p>
-            <img class="img" src="" />
-            <img class="img" src="" />
-            <img class="img" src="" />
-            <img class="img" src="" />
-            <img class="img" src="" />
-            <a href="/Fantasy/ManageTeam">Manage team</a>
-        </div>
-    }
-}
+<div>
+    <h3>My Teams</h3>
+        @if(teams is not null)
+        {
+            @foreach (FantasyTeamModel team in teams)
+            {
+                <div class="fantasy-team-home-control">
+                    <p>Fantasy Team name</p>
+                    <img class="img" src="" />
+                    <img class="img" src="" />
+                    <img class="img" src="" />
+                    <img class="img" src="" />
+                    <img class="img" src="" />
+                    <a href="/Fantasy/ManageTeam">Manage team</a>
+                </div>
+            }
+        }
+    <h3>My Leagues</h3>
+
+
+</div>
+
+
 
 
 

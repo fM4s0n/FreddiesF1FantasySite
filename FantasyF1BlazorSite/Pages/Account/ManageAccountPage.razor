@@ -27,20 +27,29 @@
             <label id="accountNumber">@user.UserID</label>
             <br /><br>
 
-            <label for="accountFullName">Full name:</label><br />
-            <input type="text" id="accountFullName" class="manage-account-input" @bind="user.FullName" />
-            <button>Edit</button>
+            <label>Account level</label>
+            <select id="manageAccountAccountlevel" class="manage-account-input">
+                <option selected="@user.AccountLevel">Standard</option>
+
+                <option selected="@user.AccountLevel">Pro</option>
+                @if (user.AccountLevel == AccountLevels.Administrator)
+                {
+                    <option selected="@user.AccountLevel">Administrator</option>
+                }
+            </select>
             <br /><br />
 
 
             <label for="accountUsername">Username:</label><br />
             <input type="text" id="accountUsername" class="manage-account-input" @bind="user.Username" />
-            <button>Edit</button>
             <br /><br />
 
             <label for="accountPassword">Password</label><br />
             <input type="password" id="accountPassword" class="manage-account-input" @bind="user.Password" />
-            <button>Edit</button>
+            <br /><br />
+
+            <label for="accountFullName">Full name:</label><br />
+            <input type="text" id="accountFullName" class="manage-account-input" @bind="user.FullName" />
             <br /><br />
 
             <label for="selectFavDriver">Favourite Driver</label><br />
@@ -54,7 +63,6 @@
                     }
                 }
             </select>
-            <button>Edit</button>
             <br /><br />
 
             <label for="selectFavConstructor">Favourite Constructor</label><br />
@@ -68,7 +76,6 @@
                     }
                 }
             </select>
-            <button>Edit</button>
             <br /><br />
 
             <button type="submit" style="width:20%; float:right" @onclick="UpdateAccount">Save</button>
