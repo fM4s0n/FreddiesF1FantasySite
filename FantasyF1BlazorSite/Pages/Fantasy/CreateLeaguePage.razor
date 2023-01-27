@@ -11,15 +11,32 @@
 @inject AppStateService appState
 @inject NavigationManager navMan
 
-<h3>Create a new Fantasy League</h3>
+<h3 style="text-align:center">Create a new Fantasy League</h3>
 
-<label>League name</label>
-<input @bind="league.LeagueName"/>
+<form id="create-league">
+    <label>League name</label>
+    <input type="text" class="create-league-input" @bind="password1" />
+    <br /><br />
+
+    <label for="leaguePassword1">League Password</label>
+    <input type="password" class="create-league-input" id="leaguePassword1" @bind="password2"></input>
+    <br /><br />
+
+    <label for="leaguePassword2">Re-enter League Password</label>
+    <input type="password" class="create-league-input" id="leaguePassword2" @bind="league.LeaguePassword"></input>
+    <br /><br />
+
+    <button type="submit" @onclick="OnSubmit" style="width:20%; float:right">Submit</button>
+</form>
+
 
 
 @code {
     UserModel user = new();
     FantasyLeagueModel league = new();
+
+    string password1 = "";
+    string password2 = "";
 
     protected override void OnInitialized ()
     {
@@ -29,6 +46,7 @@
     private void OnSubmit()
     {
         league.LeagueOwnerId = user.UserID;
+        league.LeaguePassword = password1;
 
         leagueData.InsertLeague(league);
 
