@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace DataAccess.Models;
+namespace DataAccess.Models.General;
 
 public class SeasonScheduleModel
 {

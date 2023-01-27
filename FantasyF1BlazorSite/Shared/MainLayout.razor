@@ -1,4 +1,5 @@
 ﻿@using DataAccess.Services
+@using DataAccess.Models
 
 @inherits LayoutComponentBase
 @inject AppStateService appState
@@ -19,10 +20,15 @@
                 <a href="/Account/Manage">My Account</a>
                 <a href="/" @onclick="@appState.LogOut">Log out</a>
                 <a>Current user: @appState.currentUser.Username</a>
+
+                @if(appState.currentUser.AccountLevel == AccountLevels.Administrator)
+                {
+                    <a href="/Fantasy/UpdatePoints">Update points</a>
+                }
             }
             else
             {
-                    <a href="/">Log in</a>
+                <a href="/">Log in</a>
             }	
         </div>
 
@@ -31,3 +37,6 @@
         </article>
     </main>
 </div>
+
+
+                 

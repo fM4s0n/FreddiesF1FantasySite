@@ -176,6 +176,7 @@ a, .btn-link {
     max-width: 350px;
     height: auto;
     border-radius: 15px;
+    margin-left: 5px;
 }
 
 .fantasy-team-home-control {

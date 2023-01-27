@@ -1,4 +1,32 @@
-﻿<h3>UpdatePointsPage</h3>
+﻿@page "/Fantasy/UpdatePoints"
+
+@using DataAccess.API
+@using DataAccess.Database
+@using DataAccess.Services
+@using DataAccess.Models
+
+@inject ApiService api
+@inject AppStateService appState
+@inject IUserData userData
+@inject NavigationManager navMan
+
+@if(appState.currentUser.AccountLevel is not AccountLevels.Administrator)
+{
+    navMan.NavigateTo("/Fanatasy/Home");
+}
+else
+{
+    <div>
+        <h3>Update Points - Quali</h3>
+    </div>
+
+    <div>
+        <h3>Update points - Race</h3>
+    </div>
+
+}
+
+
 
 @code {
     //page only available to admins to manually update points after quali/race 

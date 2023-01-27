@@ -1,4 +1,4 @@
-﻿namespace DataAccess.Models;
+﻿namespace DataAccess.Models.General;
 
 /// <summary>
 /// Used for driver results for the favourite driver control on homepage
