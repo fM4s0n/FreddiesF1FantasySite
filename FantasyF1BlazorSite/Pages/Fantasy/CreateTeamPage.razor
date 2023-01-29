@@ -30,6 +30,8 @@
 @code {
     FantasyTeamModel team = new();
 
+    List<FantasyTeamModel> usersCurrentTeams = new();
+
     public void OnSubmit()
     {
         team.OwnerId = appState.currentUser.UserID;
