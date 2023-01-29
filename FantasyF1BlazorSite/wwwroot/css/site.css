@@ -213,3 +213,7 @@ a, .btn-link {
     height: 35px;
     border-radius: 5px;
 }
+
+.fantasy-home-control-head {
+    display: flex;
+}

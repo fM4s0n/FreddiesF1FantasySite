@@ -17,7 +17,7 @@
 
     <form id="create-team">
         <label>Team name</label>
-        <input type="text" class="create-team-imput" @bind="team.TeamName" />
+        <input type="text" class="create-team-imput" @bind="team.Name" />
         <br />  <br />
 
         <button type="submit" @onclick="OnSubmit">Create Team</button>
@@ -35,7 +35,8 @@
     public void OnSubmit()
     {
         team.OwnerId = appState.currentUser.UserID;
-        
+        team.CreatedDate = DateTime.Now;
+
         //make new call to db to update teamid
         
         //navigate to manage team

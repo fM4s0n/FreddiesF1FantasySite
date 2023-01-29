@@ -36,14 +36,14 @@ public class LeagueData : ILeagueData
     public Task InsertLeague(FantasyLeagueModel league)
     {
         string sql = @"INSERT INTO dbo.tblLeague 
-                       VALUES (@Username, @Password, @FullName, @FavouriteDriverId, @FavouriteConstructorId, @FavouriteDriverName, @FavouriteConstructorName);";
+                       VALUES (Name = @league.Name, Password = @league.Password, CreatedDate = @league.CreatedDate, OwnerId = @league.OwnerId);";
 
         return _db.SaveData(sql, league);
     }
 
     public Task UpdateLeagueDetails(FantasyLeagueModel league)
     {
-        string sql = @"UPDATE dbo.tblLeague SET LeagueName = @league.LeagueName, LeaguePassword = @league.Password, LeagueOwnerId = @league.OwnerId
+        string sql = @"UPDATE dbo.tblLeague SET Name = @league.Name, Password = @league.Password, OwnerId = @league.OwnerId
                        WHERE LeagueId = @league.LeagueId";
 
         return _db.SaveData(sql, league);

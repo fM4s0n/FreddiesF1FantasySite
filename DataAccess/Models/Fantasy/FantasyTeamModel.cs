@@ -11,11 +11,12 @@ public class FantasyTeamModel
 {
     public int TeamId { get; set; }
 
-    public string TeamName { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
     //UserId of who owns the Team
     public int OwnerId { get; set; }
 
+    
     public UserModel? Owner { get; set; }
 
     //LeagueId of the league a team is associated with - can be null incase they get kicked from a league
@@ -23,13 +24,20 @@ public class FantasyTeamModel
 
     public List<ConstructorTeamMembership>? Constructors { get; set; }
     
+
     public List<DriverTeamMembership>? Drivers { get; set; }
 
+    //Can get
     public string BoostedDriverId { get; set; } = string.Empty;
 
-    public double TeamBudgetRemaining { get; set; } = 100.0;
+    //Need to store
+    public double BudgetRemaining { get; set; } = 100.0;
 
-    public double TeamValue { get; set; }
+    //Can calculate
+    public double TotalTeamValue { get; set; }
 
-    public double TeamPoints { get; set; }
+    //Can calculate
+    public double TotalPoints { get; set; }
+
+    public DateTime CreatedDate { get; set; }
 }
