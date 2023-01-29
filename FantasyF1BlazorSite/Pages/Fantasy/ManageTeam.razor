@@ -1,7 +1,9 @@
-﻿@page "/Fantasy/ManageTeam"
+﻿@page "/Fantasy/ManageTeam/{passedTeamId:int}"
 
 <h3>ManageTeam</h3>
 
 @code {
+    [Parameter]
+    public int passedTeamId { get; set; }
 
 }

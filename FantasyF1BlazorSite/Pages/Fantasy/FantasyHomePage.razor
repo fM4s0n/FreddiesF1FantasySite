@@ -11,40 +11,66 @@
 
 <h2 style="text-align:center">Fantasy Home</h2>
 
-<div>
+@if (appState.isLoggedIn)
+{
     <div>
-        <h3>My Teams</h3>
-        @if(teams is not null)
-        {
-            @foreach (FantasyTeamModel team in teams)
+        <div>
+            <div>
+                <h3>My Leagues</h3>
+                <a href="/Fantasy/CreateLeague">Create a new League</a>
+
+                @if (leagues is not null)
+                {
+                    @foreach (FantasyLeagueModel league in leagues)
+                    {
+                        <div class="fantasy-league-home-control" style="flex:auto">
+                            <a href="/Fantasy/ManageLeague/LeagueId=(@league.LeagueId)">League name</a>  <br />
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Pos.</th>
+                                        <th>Team</th>
+                                        <th>Points</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1.</td>
+                                        <td>test team</td>
+                                        <td>400</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <a href="/Fantasy/ManageLeague/LeagueId=(@league.LeagueId)">Manage League</a>
+                        </div>
+                    }
+                }
+                <br /><br />
+            </div>
+
+            <h3>My Teams</h3>
+            @if (teams is not null)
             {
-                <div class="fantasy-team-home-control">
-                    <p>Fantasy Team name</p>
-                    <img class="img" src="" />
-                    <img class="img" src="" />
-                    <img class="img" src="" />
-                    <img class="img" src="" />
-                    <img class="img" src="" />
-                    <a href="/Fantasy/ManageTeam">Manage team</a>
-                </div>
+                @foreach (FantasyTeamModel team in teams)
+                {
+                    <div class="fantasy-team-home-control">
+                        <p>Fantasy Team name</p>
+                        <img class="img" src="" />
+                        <img class="img" src="" />
+                        <img class="img" src="" />
+                        <img class="img" src="" />
+                        <img class="img" src="" />
+                        <a href="/Fantasy/ManageTeam">Manage team</a>
+                    </div>
+                }
             }
-        }
+        </div>
     </div>
-    <div>
-        <h3>My Leagues</h3>
-
-        <a href="/Fantasy/CreateLeague">Create a new League</a>
-
-        @if(leagues is not null)
-        {
-            @foreach(FantasyLeagueModel league in leagues)
-            {
-                <a href="/Fantasy/ManageLeague/LeagueId=(@league.LeagueId)">Manage League</a>
-            }
-        }
-    </div>
-</div>
-
+}
+else
+{
+    <p>please log in</p>
+}
 
 
 
@@ -55,11 +81,15 @@
     FantasyTeamModel team2 = new();
 
     List<FantasyLeagueModel> leagues = new();
+    FantasyLeagueModel league1 = new();
+    FantasyLeagueModel league2 = new();
 
     protected override void OnInitialized ()
     {
         teams.Add(team1);
         teams.Add(team2);
+        leagues.Add(league1);
+        leagues.Add(league2);
     }
 
 }

@@ -9,17 +9,17 @@
 /// </summary>
 public class FantasyTeamModel
 {
-    public int FantasyTeamId { get; set; }
+    public int TeamId { get; set; }
 
-    public string FantasyTeamName { get; set; } = string.Empty;
+    public string TeamName { get; set; } = string.Empty;
 
     //UserId of who owns the Team
-    public int OwnerUserId { get; set; }
+    public int OwnerId { get; set; }
 
     public UserModel? Owner { get; set; }
 
-    //LeagueId of the league a team is associated with
-    public int LeagueId { get; set; }
+    //LeagueId of the league a team is associated with - can be null incase they get kicked from a league
+    public int? LeagueId { get; set; }
 
     public List<ConstructorTeamMembership>? Constructors { get; set; }
     

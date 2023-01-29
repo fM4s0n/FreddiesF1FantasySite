@@ -1,6 +1,7 @@
 ﻿@page "/Fantasy/CreateTeam"
 
 @using DataAccess.Models.Fantasy
+@using DataAccess.Models
 @using DataAccess.Database
 @using DataAccess.API
 @using DataAccess.Services
@@ -8,9 +9,34 @@
 @inject DatabaseService db
 @inject ApiService api
 @inject AppStateService appState
+@inject NavigationManager navMan
 
-<h3>Create Team</h3>
+@if(appState.isLoggedIn)
+{
+    <h3>Create a new Fantasy Team</h3>
+
+    <form id="create-team">
+        <label>Team name</label>
+        <input type="text" class="create-team-imput" @bind="team.TeamName" />
+        <br />  <br />
+
+        <button type="submit" @onclick="OnSubmit">Create Team</button>
+    </form>
+}
+
+
+
 
 @code {
+    FantasyTeamModel team = new();
 
+    public void OnSubmit()
+    {
+        team.OwnerId = appState.currentUser.UserID;
+        
+        //make new call to db to update teamid
+        
+        //navigate to manage team
+        navMan.NavigateTo($"/Fantasy/ManageTeam{team.TeamId}", false);
+    }
 }

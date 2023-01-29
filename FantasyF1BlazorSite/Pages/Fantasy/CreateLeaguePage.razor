@@ -14,8 +14,8 @@
 <h3 style="text-align:center">Create a new Fantasy League</h3>
 
 <form id="create-league">
-    <label>League name</label>
-    <input type="text" class="create-league-input" @bind="password1" />
+    <label for="password1">League name</label>
+    <input type="text" class="create-league-input" @bind="password1" id="password1"/>
     <br /><br />
 
     <label for="leaguePassword1">League Password</label>
@@ -49,6 +49,10 @@
         league.LeaguePassword = password1;
 
         leagueData.InsertLeague(league);
+
+
+        //update league to get its id, how do i get its id if I don't know it though??
+        league = leagueData.GetMostRecentLeague();
 
         navMan.NavigateTo("/Fantasy/Home", true);
     }
