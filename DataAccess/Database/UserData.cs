@@ -27,8 +27,8 @@ public class UserData : IUserData
 
     public Task InsertUser(UserModel user)
     {
-        string sql = @"INSERT INTO dbo.tblUser 
-                       VALUES (@StrUserId, @Username, @Password, @FullName, @FavouriteDriverId, @FavouriteConstructorId, @FavouriteDriverName, @FavouriteConstructorName, @UserLevel);";
+        string sql = @"INSERT INTO dbo.tblUser (UserId, Username, Password, FullName, FavouriteDriverId, FavouriteConstructorId, FavouriteDriverName, FavouriteConstructorName, UserLevel)
+                       VALUES (@UserId, @Username, @Password, @FullName, @FavouriteDriverId, @FavouriteConstructorId, @FavouriteDriverName, @FavouriteConstructorName, @UserLevel);";
 
         return _db.SaveData(sql, user);
     }

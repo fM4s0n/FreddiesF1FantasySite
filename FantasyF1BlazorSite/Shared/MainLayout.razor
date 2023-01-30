@@ -21,7 +21,7 @@
                 <a href="/" @onclick="@appState.LogOut">Log out</a>
                 <a>Current user: @appState.currentUser.Username</a>
 
-                @if(appState.currentUser.AccountLevel == AccountLevels.Administrator)
+                @if(appState.currentUser.UserLevel == UserLevels.Administrator)
                 {
                     <a href="/Fantasy/UpdatePoints">Update points</a>
                 }

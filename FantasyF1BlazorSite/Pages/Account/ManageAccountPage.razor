@@ -29,13 +29,13 @@
             <br /><br>
 
             <label>Account level</label>
-            <select id="manageAccountAccountlevel" class="manage-account-input" @bind="user.AccountLevel">
-                <option selected="@user.AccountLevel">Standard</option>
+            <select id="manageAccountAccountlevel" class="manage-account-input" @bind="user.UserLevel">
+                <option selected="@user.UserLevel">Standard</option>
 
-                <option selected="@user.AccountLevel">Pro</option>
-                @if (user.AccountLevel == AccountLevels.Administrator)
+                <option selected="@user.UserLevel">Pro</option>
+                @if (user.UserLevel == UserLevels.Administrator)
                 {
-                    <option selected="@user.AccountLevel">Administrator</option>
+                    <option selected="@user.UserLevel">Administrator</option>
                 }
             </select>
             <br /><br />

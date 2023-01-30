@@ -18,7 +18,7 @@ public class FantasyLeagueModel
 
     public List<FantasyTeamModel>? Teams { get; set; }
 
-    public Guid OwnerId { get; set; }
+    public string OwnerId { get; set; } = string.Empty;
 
     public DateTime CreatedDate { get; set; }
 }

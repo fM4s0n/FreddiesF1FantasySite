@@ -10,7 +10,7 @@
 @inject IUserData userData
 @inject NavigationManager navMan
 
-@if(appState.currentUser.AccountLevel is not AccountLevels.Administrator)
+@if(appState.currentUser.UserLevel is not UserLevels.Administrator)
 {
     navMan.NavigateTo("/Fanatasy/Home");
 }
