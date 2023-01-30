@@ -8,11 +8,11 @@ namespace DataAccess.Models.Fantasy;
 /// </summary>
 public class TeamRaceEntryModel
 {
-    public int TeamRaceEntryId { get; set; } // should ids be GUID??
+    public string TeamRaceEntryId { get; set; } = string.Empty; // should ids be GUID??
 
     public int Season { get; set; }
 
-    public int TeamId { get; set; }
+    public string TeamId { get; set; } = string.Empty;
 
     public string ConstructorId { get; set; } = string.Empty;
 

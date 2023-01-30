@@ -6,16 +6,16 @@
 /// </summary>
 public class DriverTeamMembership
 {
-    public int DriverTeamMembershipId { get; set; }
+    public string DriverTeamMembershipId { get; set; } = string.Empty;
 
-    public int TeamId { get; set; }
+    public string TeamId { get; set; } = string.Empty;
 
     //Api driver id
     public string DriverId { get; set; } = string.Empty;
 
     public bool CurrentlySelected { get; set; }
 
-    public int PointsScoredForTeam { get; set; }
+    public double PointsScoredForTeam { get; set; }
 
     public double PurchasedValue { get; set; }
 

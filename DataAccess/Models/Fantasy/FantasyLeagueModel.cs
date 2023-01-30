@@ -4,7 +4,7 @@ namespace DataAccess.Models.Fantasy;
 
 public class FantasyLeagueModel
 {
-    public int LeagueId { get; set; }
+    public string LeagueId { get; set; } = string.Empty;
 
     [Required]
     [StringLength(maximumLength: 30, ErrorMessage ="Name is too long, max length is 30 characters")]

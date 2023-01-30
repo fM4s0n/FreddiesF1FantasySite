@@ -34,6 +34,7 @@
 
     public void OnSubmit()
     {
+        team.TeamId = Guid.NewGuid().ToString();
         team.OwnerId = appState.currentUser.UserId;
         team.CreatedDate = DateTime.Now;
 
