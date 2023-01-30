@@ -34,7 +34,7 @@
 
     public void OnSubmit()
     {
-        team.OwnerId = appState.currentUser.UserID;
+        team.OwnerId = appState.currentUser.UserId;
         team.CreatedDate = DateTime.Now;
 
         //make new call to db to update teamid

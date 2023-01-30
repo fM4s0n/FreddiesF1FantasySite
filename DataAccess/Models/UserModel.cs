@@ -7,23 +7,26 @@ namespace DataAccess.Models;
 /// </summary>
 public class UserModel
 {
-    public int UserID { get; set; }
+    public Guid UserId { get; set; }
 
-    public string Username { get; set; } = "";
+    public string StrUserId { get { return UserId.ToString(); } }
 
-    public string Password { get; set; } = "";
+    public string Username { get; set; } = string.Empty;
 
-    public string FullName { get; set; } = "";
+    public string Password { get; set; } = string.Empty;
+
+    public string FullName { get; set; } = string.Empty;
 
     public AccountLevels AccountLevel { get; set; } = AccountLevels.Standard;
 
-    public string FavouriteDriverName { get; set; } = "";
+    public string FavouriteDriverName { get; set; } = string.Empty;
 
-    public string FavouriteDriverId { get; set; } = "";
+    public string FavouriteDriverId { get; set; } = string.Empty;
 
-    public string FavouriteConstructorName { get; set; } = "";
+    public string FavouriteConstructorName { get; set; } = string.Empty;
 
-    public string FavouriteConstructorId { get; set; } = "";
+    public string FavouriteConstructorId { get; set; } = string.Empty;
+
 }
 
 /// <summary>

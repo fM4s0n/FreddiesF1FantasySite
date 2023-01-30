@@ -4,10 +4,10 @@ namespace DataAccess.Database
 {
     public interface ILeagueData
     {
-        Task<List<FantasyLeagueModel>> GetAllLeagues();
-        Task<List<FantasyLeagueModel>> GetLeague(int leagueId);
-        Task<List<FantasyLeagueModel>> GetMostRecentLeague();
-        Task InsertLeague(FantasyLeagueModel league);
-        Task UpdateLeagueDetails(FantasyLeagueModel league);
+        Task<List<FantasyLeagueModel>> GetAllLeagues ();
+        Task<List<FantasyLeagueModel>> GetLeaguesByUserId (int leagueId);
+        Task<List<FantasyLeagueModel>> GetMostRecentLeague ();
+        Task InsertLeague (FantasyLeagueModel league);
+        Task UpdateLeagueDetails (FantasyLeagueModel league);
     }
 }

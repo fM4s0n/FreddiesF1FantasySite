@@ -14,8 +14,7 @@ public class FantasyTeamModel
     public string Name { get; set; } = string.Empty;
 
     //UserId of who owns the Team
-    public int OwnerId { get; set; }
-
+    public Guid OwnerId { get; set; }
     
     public UserModel? Owner { get; set; }
 

@@ -18,9 +18,10 @@ public class LeagueData : ILeagueData
         return _db.LoadData<FantasyLeagueModel, dynamic>(sql, new { });
     }
 
-    public Task<List<FantasyLeagueModel>> GetLeague(int leagueId)
+
+    public Task<List<FantasyLeagueModel>> GetLeaguesByUserId(int userId)
     {
-        string sql = "SELECT * FROM tblLeague WHERE LeagueId = @leagueId";
+        string sql = "SELECT * FROM tblLeague WHERE OwnerId = @userId";
 
         return _db.LoadData<FantasyLeagueModel, dynamic>(sql, new { });
     }

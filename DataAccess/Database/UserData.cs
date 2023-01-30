@@ -20,7 +20,7 @@ public class UserData : IUserData
 
     public Task<List<UserModel>> GetUser(string username)
     {
-        string sql = "SELECT * FROM tblUser WHERE Username = '@username' ";
+        string sql = "SELECT * FROM tblUser WHERE Username = '@Username' ";
 
         return _db.LoadData<UserModel, dynamic>(sql, new { });
     }
@@ -28,7 +28,7 @@ public class UserData : IUserData
     public Task InsertUser(UserModel user)
     {
         string sql = @"INSERT INTO dbo.tblUser 
-                       VALUES (@Username, @Password, @FullName, @FavouriteDriverId, @FavouriteConstructorId, @FavouriteDriverName, @FavouriteConstructorName);";
+                       VALUES (@StrUserId, @Username, @Password, @FullName, @FavouriteDriverId, @FavouriteConstructorId, @FavouriteDriverName, @FavouriteConstructorName, @UserLevel);";
 
         return _db.SaveData(sql, user);
     }

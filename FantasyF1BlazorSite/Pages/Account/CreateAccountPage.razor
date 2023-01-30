@@ -85,6 +85,8 @@
     {
         GetApiIds();
 
+        user.UserId = Guid.NewGuid();
+
         await userData.InsertUser(user);
 
         //display success message then ask user to login

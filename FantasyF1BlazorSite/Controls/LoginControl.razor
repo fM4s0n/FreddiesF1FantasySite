@@ -50,6 +50,7 @@
         {
             foreach (UserModel u in users)
             {
+                u.UserId = Guid.Parse(u.StrUserId);
                 if (usernameEntered == u.Username)
                 {
                     if (passwordEntered == u.Password)
