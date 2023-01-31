@@ -15,14 +15,11 @@ public class FantasyTeamModel
 
     //UserId of who owns the Team
     public string OwnerId { get; set; } = string.Empty;
-    
-    public UserModel? Owner { get; set; }
-
+   
     //LeagueId of the league a team is associated with - can be null incase they get kicked from a league
     public int? LeagueId { get; set; }
 
-    public List<ConstructorTeamMembership>? Constructors { get; set; }
-    
+    public List<ConstructorTeamMembership>? Constructors { get; set; }    
 
     public List<DriverTeamMembership>? Drivers { get; set; }
 
@@ -35,7 +32,7 @@ public class FantasyTeamModel
     //Can calculate
     public double TotalTeamValue { get; set; }
 
-    //Can calculate
+    //Can calculate from driverTeamMembersip
     public double TotalPoints { get; set; }
 
     public DateTime CreatedDate { get; set; }

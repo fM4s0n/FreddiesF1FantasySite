@@ -37,8 +37,6 @@
         team.TeamId = Guid.NewGuid().ToString();
         team.OwnerId = appState.currentUser.UserId;
         team.CreatedDate = DateTime.Now;
-
-        //make new call to db to update teamid
         
         //navigate to manage team
         navMan.NavigateTo($"/Fantasy/ManageTeam{team.TeamId}", false);

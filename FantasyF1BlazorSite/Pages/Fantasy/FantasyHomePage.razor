@@ -15,67 +15,66 @@
 {
     <div>
         <div>
-            <div>
-                <h2>My Leagues</h2>
-                <a href="/Fantasy/CreateLeague">Create a new League</a>
+            <h2>My Leagues</h2>
+            <a href="/Fantasy/CreateLeague">Create a new League</a>
 
-                @if (leagues is not null)
-                {
-                    @foreach (FantasyLeagueModel league in leagues)
-                    {
-                        <div class="fantasy-league-home-control" style="flex:auto">
-                            <div class="fantasy-home-control-head">
-                                <h4 style="flex-grow:20">League name</h4>
-                                <a href="/Fantasy/ManageLeague/LeagueId=(@league.LeagueId)" style="flex-grow:1"><i class="fa-solid fa-gear"></i></a>
-                            </div>
-
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Pos.</th>
-                                        <th>Team</th>
-                                        <th>Points</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>1.</td>
-                                        <td>test team</td>
-                                        <td>400</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                }
-                <br /><br />
-            </div>
-
-            <h2>My Teams</h2>
-            @if (teams is not null)
+            @if (leagues is not null)
             {
-                @foreach (FantasyTeamModel team in teams)
+                @foreach (FantasyLeagueModel league in leagues)
                 {
-                    <div class="fantasy-team-home-control">
+                    <div class="fantasy-league-home-control" style="flex:auto">
                         <div class="fantasy-home-control-head">
-                            <h4 style="flex-grow:20">Fantasy Team name</h4>
-                            <a href="/Fantasy/ManageTeam/TeamId=(@team.LeagueId)" style="flex-grow:1"><i class="fa-solid fa-gear"></i></a>
+                            <h4 style="flex-grow:20">League name</h4>
+                            <a href="/Fantasy/ManageLeague/LeagueId=(@league.LeagueId)" style="flex-grow:1"><i class="fa-solid fa-gear"></i></a>
                         </div>
 
-                        <img class="img" src="" />
-                        <img class="img" src="" />
-                        <img class="img" src="" />
-                        <img class="img" src="" />
-                        <img class="img" src="" />
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Pos.</th>
+                                    <th>Team</th>
+                                    <th>Points</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1.</td>
+                                    <td>test team</td>
+                                    <td>400</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 }
             }
+            <br /><br />
         </div>
+
+        <h2>My Teams</h2>
+        <a href="/Fantasy/CreateTeam">Create a new Team</a>
+        @if (teams is not null)
+        {
+            @foreach (FantasyTeamModel team in teams)
+            {
+                <div class="fantasy-team-home-control">
+                    <div class="fantasy-home-control-head">
+                        <h4 style="flex-grow:20">Fantasy Team name</h4>
+                        <a href="/Fantasy/ManageTeam/TeamId=(@team.LeagueId)" style="flex-grow:1"><i class="fa-solid fa-gear"></i></a>
+                    </div>
+
+                    <img class="img" src="" />
+                    <img class="img" src="" />
+                    <img class="img" src="" />
+                    <img class="img" src="" />
+                    <img class="img" src="" />
+                </div>
+            }
+        }
     </div>
 }
 else
 {
-    <p>please log in</p>
+    <p>Please log in</p>
 }
 
 

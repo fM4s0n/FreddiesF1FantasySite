@@ -14,18 +14,25 @@
 <h3 style="text-align:center">Create a new Fantasy League</h3>
 
 <form id="create-league">
-    <label for="password1">League name</label>
-    <input type="text" class="create-league-input" @bind="password1" id="password1"/>
+    <label for="leagueNameInput">League name</label>
+    <input type="text" class="create-league-input" @bind="league.Name" id="leagueNameInput"/>
     <br /><br />
 
-    <label for="leaguePassword1">League Password</label>
-    <input type="password" class="create-league-input" id="leaguePassword1" @bind="password2"></input>
-    <br /><br />
+    <label for="requirePasswordCheckbox">Require password?</label>
+    <input type="checkbox" id="requirePasswordCheckbox" @bind="league.RequirePassword"/>
+    <p style="font-size:smaller">-Select to require a password when a team enters your league</p>
 
-    <label for="leaguePassword2">Re-enter League Password</label>
-    <input type="password" class="create-league-input" id="leaguePassword2" @bind="league.Password"></input>
-    <br /><br />
 
+    @if(league.RequirePassword)
+    {
+        <label for="leaguePassword1">League Password</label>
+        <input type="password" class="create-league-input" id="leaguePassword1" @bind="password1"></input>
+        <br /><br />
+
+        <label for="leaguePassword2">Re-enter League Password</label>
+        <input type="password" class="create-league-input" id="leaguePassword2" @bind="password2"></input>
+        <br /><br />
+    }
     <button type="submit" @onclick="OnSubmit" style="width:20%; float:right">Submit</button>
 </form>
 
@@ -47,15 +54,17 @@
     {
         league.LeagueId = Guid.NewGuid().ToString();
         league.OwnerId = user.UserId;
-        league.Password = password1;
         league.CreatedDate = DateTime.Now;
 
+        if (league.RequirePassword && password1 == password2)
+        {
+            league.Password = password1;
+        }
+
+        if (league.RequirePassword && password1 != password2)
+            return;
+
         leagueData.InsertLeague(league);
-
-
-        //update league to get its id, how do i get its id if I don't know it though??
-        leagueData.GetMostRecentLeague();
-
         navMan.NavigateTo("/Fantasy/Home", true);
     }
 }
