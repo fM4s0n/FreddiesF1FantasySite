@@ -11,22 +11,24 @@ public class LeagueData : ILeagueData
         _db = db;
     }
 
-    public Task<List<FantasyLeagueModel>> GetAllLeagues ()
+    public Task<List<FantasyLeagueModel>> GetAllLeagues()
     {
         string sql = "SELECT * FROM tblLeague";
 
         return _db.LoadData<FantasyLeagueModel, dynamic>(sql, new { });
     }
 
-    public Task<List<FantasyLeagueModel>> GetLeaguesByUserId (string userId)
+    public Task<List<FantasyLeagueModel>> GetLeaguesByUserId(string OwnerId)
     {
-        throw new NotImplementedException();
+        string sql = "SELECT * FROM tblLeague WHERE OwnerId = @OwnerId";
+
+        return _db.LoadData<FantasyLeagueModel, dynamic>(sql, new { });
     }
 
     public Task InsertLeague(FantasyLeagueModel league)
     {
-        string sql = @"INSERT INTO dbo.tblLeague 
-                       VALUES (LeagueId = @LeagueId, Name = @Name, RequirePassword = @RequirePassword, Password = @Password, , OwnerId = @OwnerId, CreatedDate = @CreatedDate);";
+        string sql = @"INSERT INTO dbo.tblLeague (LeagueId, Name, RequirePassword, Password, OwnerId, CreatedDate)
+                       VALUES (@LeagueId, @Name, @RequirePassword, @Password, @OwnerId, @CreatedDate);";
 
         return _db.SaveData(sql, league);
     }

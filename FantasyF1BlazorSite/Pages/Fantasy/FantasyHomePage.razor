@@ -8,6 +8,7 @@
 @using FreddiesF1FantasySite.Controls
 
 @inject AppStateService appState
+@inject ILeagueData leagueData
 
 <h2 style="text-align:center">Fantasy Home</h2>
 
@@ -86,15 +87,13 @@ else
     FantasyTeamModel team2 = new();
 
     List<FantasyLeagueModel> leagues = new();
-    FantasyLeagueModel league1 = new();
-    FantasyLeagueModel league2 = new();
 
-    protected override void OnInitialized ()
+    protected override async Task OnInitializedAsync()
     {
+        leagues = await leagueData.GetLeaguesByUserId(appState.currentUser.UserId);
+
         teams.Add(team1);
         teams.Add(team2);
-        leagues.Add(league1);
-        leagues.Add(league2);
     }
 
 }

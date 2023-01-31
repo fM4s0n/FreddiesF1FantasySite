@@ -50,7 +50,7 @@
         user = appState.currentUser;
     }
 
-    private void OnSubmit()
+    private async void OnSubmit()
     {
         league.LeagueId = Guid.NewGuid().ToString();
         league.OwnerId = user.UserId;
@@ -64,7 +64,7 @@
         if (league.RequirePassword && password1 != password2)
             return;
 
-        leagueData.InsertLeague(league);
+        await leagueData.InsertLeague(league);
         navMan.NavigateTo("/Fantasy/Home", true);
     }
 }
