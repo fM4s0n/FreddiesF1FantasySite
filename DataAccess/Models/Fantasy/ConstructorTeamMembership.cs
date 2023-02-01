@@ -1,4 +1,5 @@
-﻿using DataAccess.Dictionaries.Fantasy; 
+﻿using DataAccess.Dictionaries;
+using DataAccess.Dictionaries.Fantasy; 
 
 namespace DataAccess.Models.Fantasy;
 
@@ -12,6 +13,9 @@ public class ConstructorTeamMembership
 
     //Api driver id
     public string ConstructorId { get; set; } = string.Empty;
+
+    //Driver full name - dont store use dictionary
+    public string DriverName { get { return DriverNameDictionary.GetDriverName(ConstructorId); } }
 
     //Are they currenty on the team
     public bool CurrentlySelected { get; set; }

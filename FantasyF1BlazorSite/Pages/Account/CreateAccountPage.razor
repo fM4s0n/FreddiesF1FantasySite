@@ -77,8 +77,8 @@
 
     private void GetApiIds()
     {
-        user.FavouriteDriverId = driverIds.GetDriverId(user.FavouriteDriverName);
-        user.FavouriteConstructorId = constructorIds.GetConstructorID(user.FavouriteConstructorName);
+        user.FavouriteDriverId = DriverIdDictionary.GetDriverId(user.FavouriteDriverName);
+        user.FavouriteConstructorId = ConstructorIdDictionary.GetConstructorID(user.FavouriteConstructorName);
     }
 
     private async void CheckUsernameIsUnique()
