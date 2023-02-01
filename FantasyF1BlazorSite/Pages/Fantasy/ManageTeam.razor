@@ -2,9 +2,11 @@
 
 @using DataAccess.Models.Fantasy
 @using DataAccess.Models
+@using DataAccess.Models.General
 @using DataAccess.Database
 @using DataAccess.API
 @using DataAccess.Services
+@using Newtonsoft.Json
 
 @inject ITeamData teamData
 @inject ApiService api
@@ -18,7 +20,23 @@
         <h2 style="text-align:center">Manage Team</h2>
         
         <div>
-            <h3>@team.Name</h3>
+            <label>Team name</label>
+            <input type="text" @bind=team.Name/>
+            <br/><br />
+
+            <label>Team Value</label>
+            <p>@team.TotalTeamValue</p>
+
+            <label>Team budget remaining</label>
+            <p>@team.BudgetRemaining</p>
+
+            <label>Selected Constructor</label>
+            <select>
+                @foreach(var constructor in constructors)
+                {
+                    <option value="@constructor.ConstructorId" selected="@(constructor.ConstructorId == team.Constructors[0].ConstructorId)">@constructor.Name</option>
+                }
+            </select>
         </div>
     }
     else
@@ -36,10 +54,47 @@ else
     public string passedTeamId { get; set; } = string.Empty;
 
     FantasyTeamModel team = new();
+    List<ConstructorStandingsModel.Constructor> constructors = new();
 
     protected override async Task OnInitializedAsync()
     {
         List<FantasyTeamModel> teams = await teamData.GetTeamsByLeagueId(passedTeamId);
         team = teams[0];
+
+        //fill drivers list
+        CompleteTeamInfo();
+
+        var json = await ApiService.GetConstructorStandingsAsync(DateTime.Now.Year.ToString());
+        ConstructorStandingsModel.Root deserialised = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(json);
+        @foreach(ConstructorStandingsModel.ConstructorStanding c in deserialised.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
+        {
+            constructors.Add(c.Constructor);
+        }
+    }
+
+    private void CompleteTeamInfo()
+    {
+        team.Drivers = GetTeamDrivers() != null ? GetTeamDrivers() : null;
+        team.Constructors = GetTeamConstructors() != null ? GetTeamConstructors() : null;
+
+        if(team.Drivers != null)
+        {
+            foreach (var driver in team.Drivers)            
+                team.TotalTeamValue += driver.CurrentValue;
+        }
+    }
+
+    private List<DriverTeamMembership> GetTeamDrivers()
+    {
+        List<DriverTeamMembership> drivers = new();
+
+        return drivers;
+    }
+
+    private List<ConstructorTeamMembership> GetTeamConstructors()
+    {
+        List<ConstructorTeamMembership> constructors = new();
+
+        return constructors;
     }
 }

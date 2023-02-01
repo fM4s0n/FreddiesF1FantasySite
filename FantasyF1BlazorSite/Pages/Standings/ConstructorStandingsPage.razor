@@ -159,7 +159,7 @@
 	/// <returns></returns>
 	public async Task GetConstructorStandings()
 	{
-		string result = await API.GetConstructorStandingsAsync(selectedYear);
+		string result = await ApiService.GetConstructorStandingsAsync(selectedYear);
 
 		//exception catch
 		if (result == "0")

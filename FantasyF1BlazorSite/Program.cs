@@ -12,7 +12,6 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
 builder.Services.AddSingleton<ApiService>();
-builder.Services.AddSingleton<DatabaseService>();
 builder.Services.AddSingleton<AppStateService>();
 builder.Services.AddSingleton<DriverIdDictionary>();
 builder.Services.AddSingleton<ConstructorIdDictionary>();

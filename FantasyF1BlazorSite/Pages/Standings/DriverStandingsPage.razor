@@ -125,7 +125,7 @@
 	/// <returns></returns>
 	public async Task GetDriverStandings()
 	{
-		string result = await API.GetDriverStandingsAsync(selectedYear);
+		string result = await ApiService.GetDriverStandingsAsync(selectedYear);
 
 		//exception catch
 		if (result == "0")

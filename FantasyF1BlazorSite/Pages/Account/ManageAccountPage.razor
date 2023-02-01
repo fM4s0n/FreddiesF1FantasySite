@@ -97,10 +97,10 @@
     {
         user = appState.currentUser;
 
-        var driverJson = await API.GetDriverStandingsAsync(DateTime.Now.Year.ToString());
+        var driverJson = await ApiService.GetDriverStandingsAsync(DateTime.Now.Year.ToString());
         drivers = JsonConvert.DeserializeObject<DriverStandingsModel.Root>(driverJson);
 
-        var constructorJson = await API.GetConstructorStandingsAsync(DateTime.Now.Year.ToString());
+        var constructorJson = await ApiService.GetConstructorStandingsAsync(DateTime.Now.Year.ToString());
         constructors = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(constructorJson);
     }
 

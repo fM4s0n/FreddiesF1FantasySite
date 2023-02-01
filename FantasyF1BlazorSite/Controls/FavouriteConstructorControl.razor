@@ -35,7 +35,7 @@
 
     protected override async Task OnInitializedAsync ()
     {
-        string json = await api.GetConstructorResultsAsync(DateTime.Now.Year, appState.currentUser.FavouriteConstructorId);
+        string json = await ApiService.GetConstructorResultsAsync(DateTime.Now.Year, appState.currentUser.FavouriteConstructorId);
 
         constructor = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(json);
     }

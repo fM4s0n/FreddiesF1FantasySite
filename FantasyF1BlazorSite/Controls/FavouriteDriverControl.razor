@@ -35,7 +35,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        string json = await API.GetDriverResultsAsync(DateTime.Now.Year, appState.currentUser.FavouriteDriverId);
+        string json = await ApiService.GetDriverResultsAsync(DateTime.Now.Year, appState.currentUser.FavouriteDriverId);
 
         driver = JsonConvert.DeserializeObject<DriverResultsModel.Root>(json);
     }

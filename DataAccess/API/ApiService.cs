@@ -5,7 +5,7 @@ public class ApiService
  /// Gets current driver standings as of most recent race
  /// </summary>
  ///  <returns>Json file or error message</returns>
-    public async Task<string> GetDriverStandingsAsync (string year)
+    public static async Task<string> GetDriverStandingsAsync(string year)
     {
         string result;
         try
@@ -25,7 +25,7 @@ public class ApiService
     /// </summary>
     /// <param name="year"></param>
     /// <returns></returns>
-    public async Task<string> GetConstructorStandingsAsync (string year)
+    public static async Task<string> GetConstructorStandingsAsync(string year)
     {
         string result;
 
@@ -48,7 +48,7 @@ public class ApiService
     /// </summary>
     /// <param name="year"></param>
     /// <returns></returns>
-    public async Task<string> GetSeasonScheduleAsync (string year)
+    public static async Task<string> GetSeasonScheduleAsync(string year)
     {
         string result;
 
@@ -72,7 +72,7 @@ public class ApiService
     /// <param name="season"></param>
     /// <param name="driverId"></param>
     /// <returns></returns>
-    public async Task<string> GetDriverResultsAsync (int season, string driverId)
+    public static async Task<string> GetDriverResultsAsync(int season, string driverId)
     {
         string result;
         string currentMonth = DateTime.Now.Month.ToString();
@@ -100,7 +100,7 @@ public class ApiService
     /// <param name="season"></param>
     /// <param name="constructorId"></param>
     /// <returns></returns>
-    public async Task<string> GetConstructorResultsAsync (int season, string constructorId)
+    public static async Task<string> GetConstructorResultsAsync(int season, string constructorId)
     {
         string result;
         string currentMonth = DateTime.Now.Month.ToString();

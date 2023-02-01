@@ -68,7 +68,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        string json = await API.GetSeasonScheduleAsync(DateTime.Now.Year.ToString());
+        string json = await ApiService.GetSeasonScheduleAsync(DateTime.Now.Year.ToString());
 
         season = JsonConvert.DeserializeObject<SeasonScheduleModel.Root>(json);
     }
