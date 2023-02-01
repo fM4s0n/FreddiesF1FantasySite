@@ -1,4 +1,6 @@
-﻿namespace DataAccess.Models.Fantasy;
+﻿using DataAccess.Dictionaries.Fantasy;
+
+namespace DataAccess.Models.Fantasy;
 
 /// <summary>
 /// Tracks a driver for a specific team - due to boosts, 
@@ -6,18 +8,24 @@
 /// </summary>
 public class DriverTeamMembership
 {
+    //id for db
     public string DriverTeamMembershipId { get; set; } = string.Empty;
 
+    //id of associated team
     public string TeamId { get; set; } = string.Empty;
 
     //Api driver id
     public string DriverId { get; set; } = string.Empty;
 
+    //Are they currenty on the team
     public bool CurrentlySelected { get; set; }
 
-    public double PointsScoredForTeam { get; set; }
+    //running total that this driver has scored for this team
+    public double PointsScored { get; set; }
 
+    //value purchased for
     public double PurchasedValue { get; set; }
 
-    public double CurrentValue { get; set; }
+    //current value - dont store, get from dictionary
+    public double CurrentValue { get { return DriverValueDictionary.GetDriverValue(DriverId); } }
 }

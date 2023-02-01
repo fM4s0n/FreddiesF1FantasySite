@@ -4,23 +4,23 @@ public  class ConstructorValueDictionary
 {
     private static readonly Dictionary<string, double> ConstructorValues = new()
     {
-        {"Alfa Romeo", 8.0},
-        {"AlphaTauri", 6.5},
-        {"Alpine F1 Team", 18.0},
-        {"Aston Martin", 7.0},
-        {"Ferrari", 23.0},
-        {"Haas F1 Team", 7.0},
-        {"McLaren", 15.0},
-        {"Mercedes", 25.0},
-        {"Red Bull", 24.0},
-        {"Williams", 5.0}
+        {"alfa", 8.0},
+        {"alphatauri", 6.5},
+        {"alpine", 18.0},
+        {"aston", 7.0},
+        {"ferrari", 23.0},
+        {"haas", 7.0},
+        {"mclaren", 15.0},
+        {"mercedes", 25.0},
+        {"red_bull", 24.0},
+        {"williams", 5.0}
     };
 
-    public static double GetCarImageURL (string ConstructorName)
+    public static double GetCurrentValue(string constructorId)
     {
         try
         {
-            return ConstructorValues[ConstructorName];
+            return ConstructorValues[constructorId];
         }
         catch (Exception)
         {
