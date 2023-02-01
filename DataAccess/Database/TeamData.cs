@@ -5,11 +5,11 @@ namespace DataAccess.Database;
 /// <summary>
 /// Database queries for team based queries
 /// </summary>
-public class TeamData
+public class TeamData : ITeamData
 {
     private readonly ISqlDataAccess _db;
 
-    public TeamData (ISqlDataAccess db)
+    public TeamData(ISqlDataAccess db)
     {
         _db = db;
     }
@@ -19,7 +19,7 @@ public class TeamData
     /// Get all teams
     /// </summary>
     /// <returns>List of every team</returns>
-    public Task<List<FantasyTeamModel>> GetAllTeams ()
+    public Task<List<FantasyTeamModel>> GetAllTeams()
     {
         string sql = "SELECT * FROM tblTeam";
 
@@ -32,9 +32,23 @@ public class TeamData
     /// </summary>
     /// <param name="userId"></param>
     /// <returns>List of all teams owned by a user</returns>
-    public Task<List<FantasyTeamModel>> GetLeaguesByUserId (int userId)
+    public Task<List<FantasyTeamModel>> GetTeamsByUserId(int userId)
     {
         string sql = "SELECT * FROM tblTeam WHERE UserId = @userId";
+
+        return _db.LoadData<FantasyTeamModel, dynamic>(sql, new { });
+    }
+
+    public Task<List<FantasyTeamModel>> GetTeamsByLeagueId(string leagueId)
+    {
+        string sql = "SELECT * FROM dbo.Team WHERE LeagueId = @leagueId";
+
+        return _db.LoadData<FantasyTeamModel, dynamic>(sql, new { });
+    }
+
+    public Task<List<FantasyTeamModel>> GetTeamByTeamId(string teamId)
+    {
+        string sql = "SELECT * FROM dbo.Team WHERE TeamId = @teamId";
 
         return _db.LoadData<FantasyTeamModel, dynamic>(sql, new { });
     }
@@ -58,7 +72,7 @@ public class TeamData
     public Task InsertTeam(FantasyTeamModel team)
     {
         string sql = @"INSERT INTO dbo.tblTeam 
-                       VALUES (@, @, @, @, @, @, @);";
+                       VALUES (@TeamId, @Name, @OwnerId, @LeagueId, @BudgetRemaining, @CreatedDate);";
 
         return _db.SaveData(sql, team);
     }
@@ -68,7 +82,7 @@ public class TeamData
     /// </summary>
     /// <param name="team"></param>
     /// <returns></returns>
-    public Task UpdateTeamDetails (FantasyTeamModel team)
+    public Task UpdateTeamDetails(FantasyTeamModel team)
     {
         string sql = @"UPDATE dbo.tblTeam SET Name = @team.Name,
                        WHERE TeamId = @team.TeamId";

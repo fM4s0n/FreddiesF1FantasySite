@@ -1,9 +1,45 @@
-﻿@page "/Fantasy/ManageTeam/{passedTeamId:int}"
+﻿@page "/Fantasy/ManageTeam/{passedTeamId}"
 
-<h3>ManageTeam</h3>
+@using DataAccess.Models.Fantasy
+@using DataAccess.Models
+@using DataAccess.Database
+@using DataAccess.API
+@using DataAccess.Services
+
+@inject ITeamData teamData
+@inject ApiService api
+@inject AppStateService appState
+@inject NavigationManager navMan
+
+@if(team is not null)
+{
+    @if(team.OwnerId == appState.currentUser.UserId)
+    {
+        <h2 style="text-align:center">Manage Team</h2>
+        
+        <div>
+            <h3>@team.Name</h3>
+        </div>
+    }
+    else
+    {
+        <p>not your team! go away</p>
+    }
+}
+else
+{
+    <p>Loading...</p>
+}
 
 @code {
     [Parameter]
-    public int passedTeamId { get; set; }
+    public string passedTeamId { get; set; } = string.Empty;
 
+    FantasyTeamModel team = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        List<FantasyTeamModel> teams = await teamData.GetTeamsByLeagueId(passedTeamId);
+        team = teams[0];
+    }
 }

@@ -1,17 +1,70 @@
-﻿@page "/Fantasy/ManageLeague/{passedLeagueId:int}"
+﻿@page "/Fantasy/ManageLeague/{passedLeagueId}"
 
 @using DataAccess.Database
 @using DataAccess.API
 @using DataAccess.Services
+@using DataAccess.Models.Fantasy
+@using DataAccess.Models
 
 @inject UserData userdata
 @inject AppStateService appState
+@inject ILeagueData leagueData
+@inject ITeamData teamData
 
-<h3>ManageLeaguePage</h3>
+<h2>Manage League</h2>
+
+<h3>All teams:</h3>
+@foreach(FantasyTeamModel team in teams)
+{
+    <div class="manage-league-team-control">
+        <h4>Team name: @team.Name</h4>
+        <p>Team owner: @GetUsername(team.OwnerId)</p>
+        <p>Team Value: @team.TotalTeamValue</p>
+        <p>Team Budget remaining: @team.BudgetRemaining</p>
+        @if(team.Drivers is not null)
+        {
+            @foreach(var driver in team.Drivers)
+            {
+                <p>@driver.DriverId</p>
+            }
+        }
+
+        <p>Boosted driver: @team.BoostedDriverId</p>
+    </div>
+}
 
 @code {
     [Parameter]
-    public int passedLeagueId { get; set; }
+    public string passedLeagueId { get; set; } = string.Empty;
 
-    
+    FantasyLeagueModel league = new();
+    List<FantasyTeamModel> teams = new();
+    List<UserModel> allUsers = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        allUsers = await userdata.GetAllUsers();
+
+        List<FantasyLeagueModel> leagues = await leagueData.GetAllLeagues();
+        foreach(var l in leagues)
+        {
+            if (l.LeagueId == passedLeagueId)
+                league = l;
+        }
+
+        //Get all teams in the league
+        teams = await teamData.GetTeamsByLeagueId(passedLeagueId);
+    }
+
+    private string GetUsername(string Ownerid)
+    {
+        UserModel teamOwner = new();
+
+        foreach(UserModel u in allUsers)
+        {
+            if (u.UserId == Ownerid)
+                teamOwner = u;
+        }
+        return teamOwner.Username;
+    }
 }

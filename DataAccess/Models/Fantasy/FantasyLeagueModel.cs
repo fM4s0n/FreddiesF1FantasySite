@@ -13,7 +13,7 @@ public class FantasyLeagueModel
 
     public string Password { get; set; } = string.Empty;
 
-    public List<FantasyTeamModel>? Teams { get; set; }
+    public List<FantasyTeamModel> Teams { get; set; } = new();
 
     public string OwnerId { get; set; } = string.Empty;
 

@@ -6,7 +6,7 @@
 @using DataAccess.API
 @using DataAccess.Services
 
-@inject DatabaseService db
+@inject ITeamData teamData
 @inject ApiService api
 @inject AppStateService appState
 @inject NavigationManager navMan
@@ -21,23 +21,45 @@
         <br />  <br />
 
         <button type="submit" @onclick="OnSubmit">Create Team</button>
+        @if(nameTaken)
+        {
+            <p>name already taken</p>
+        }
     </form>
 }
 
 
 
-
 @code {
     FantasyTeamModel team = new();
-
     List<FantasyTeamModel> usersCurrentTeams = new();
+    bool nameTaken = false;
 
-    public void OnSubmit()
+    public async void OnSubmit()
     {
         team.TeamId = Guid.NewGuid().ToString();
         team.OwnerId = appState.currentUser.UserId;
         team.CreatedDate = DateTime.Now;
-        
+
+        //check if user has a team with that name
+        usersCurrentTeams = await teamData.GetAllTeams();
+        foreach (var t in usersCurrentTeams)
+        {
+            if (t.OwnerId != appState.currentUser.UserId)
+                usersCurrentTeams.Remove(t);
+        }
+
+        foreach (var t in usersCurrentTeams)
+        {
+            if (t.Name == team.Name)
+            {
+                nameTaken = true;
+                return;
+            }
+        }
+
+        await teamData.InsertTeam(team);
+
         //navigate to manage team
         navMan.NavigateTo($"/Fantasy/ManageTeam{team.TeamId}", false);
     }

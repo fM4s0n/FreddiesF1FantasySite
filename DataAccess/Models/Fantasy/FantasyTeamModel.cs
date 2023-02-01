@@ -17,7 +17,7 @@ public class FantasyTeamModel
     public string OwnerId { get; set; } = string.Empty;
    
     //LeagueId of the league a team is associated with - can be null incase they get kicked from a league
-    public string? LeagueId { get; set; }
+    public string? LeagueId { get; set; } = null;
 
     public List<ConstructorTeamMembership>? Constructors { get; set; }    
 

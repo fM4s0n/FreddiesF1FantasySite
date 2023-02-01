@@ -20,6 +20,7 @@ builder.Services.AddSingleton<ConstructorIdDictionary>();
 builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddTransient<IUserData, UserData>();
 builder.Services.AddTransient<ILeagueData, LeagueData>();
+builder.Services.AddTransient<ITeamData, TeamData>();
 
 var app = builder.Build();
 
