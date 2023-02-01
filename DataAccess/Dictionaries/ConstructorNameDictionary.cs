@@ -16,7 +16,7 @@ public class ConstructorNameDictionary
         {"williams" , "Williams"}
     };
 
-    public string GetConstructorID(string id)
+    public static string GetConstructorName(string id)
     {
         try
         {

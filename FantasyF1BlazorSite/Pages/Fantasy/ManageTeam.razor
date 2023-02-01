@@ -50,10 +50,13 @@ else
 }
 
 @code {
+    //Get teamid of the team being managed
     [Parameter]
     public string passedTeamId { get; set; } = string.Empty;
 
     FantasyTeamModel team = new();
+
+    //List of constructors for user to select for their team - get from api
     List<ConstructorStandingsModel.Constructor> constructors = new();
 
     protected override async Task OnInitializedAsync()
@@ -61,9 +64,15 @@ else
         List<FantasyTeamModel> teams = await teamData.GetTeamsByLeagueId(passedTeamId);
         team = teams[0];
 
-        //fill drivers list
+        //fill out calculated properties of the team
         CompleteTeamInfo();
 
+        //fill out the constructors list from thr api
+        GetListOfConstructors();
+    }
+
+    private async void GetListOfConstructors()
+    {
         var json = await ApiService.GetConstructorStandingsAsync(DateTime.Now.Year.ToString());
         ConstructorStandingsModel.Root deserialised = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(json);
         @foreach(ConstructorStandingsModel.ConstructorStanding c in deserialised.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
@@ -74,9 +83,11 @@ else
 
     private void CompleteTeamInfo()
     {
-        team.Drivers = GetTeamDrivers() != null ? GetTeamDrivers() : null;
-        team.Constructors = GetTeamConstructors() != null ? GetTeamConstructors() : null;
+        //fill out the driver and constructor lists
+        team.Drivers = GetTeamDrivers().Count > 0 ? GetTeamDrivers() : null;
+        team.Constructors = GetTeamConstructors().Count > 0 ? GetTeamConstructors() : null;
 
+        //calculate total team value
         if(team.Drivers != null)
         {
             foreach (var driver in team.Drivers)            

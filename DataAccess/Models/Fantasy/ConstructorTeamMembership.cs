@@ -15,7 +15,7 @@ public class ConstructorTeamMembership
     public string ConstructorId { get; set; } = string.Empty;
 
     //Driver full name - dont store use dictionary
-    public string DriverName { get { return DriverNameDictionary.GetDriverName(ConstructorId); } }
+    public string ConstructorName { get { return ConstructorNameDictionary.GetConstructorName(ConstructorId); } }
 
     //Are they currenty on the team
     public bool CurrentlySelected { get; set; }
