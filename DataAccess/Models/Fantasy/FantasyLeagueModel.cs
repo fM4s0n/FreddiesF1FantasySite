@@ -8,9 +8,7 @@ public class FantasyLeagueModel
 
     public string Name { get; set; } = string.Empty;
 
-    /// <summary>
     /// League owner and choose to add security to a league by adding a password
-    /// </summary>
     public bool RequirePassword { get; set; } = false;
 
     public string Password { get; set; } = string.Empty;

@@ -6,6 +6,7 @@
 @using DataAccess.Models.Fantasy
 @using DataAccess.Services
 @using FreddiesF1FantasySite.Controls
+@using System.Linq
 
 @inject AppStateService appState
 @inject ILeagueData leagueData
@@ -25,26 +26,37 @@
                 {
                     <div class="fantasy-league-home-control" style="flex:auto">
                         <div class="fantasy-home-control-head">
-                            <h4 style="flex-grow:20">League name</h4>
+                            <h4 style="flex-grow:20">@league.Name</h4>
                             <a href="/Fantasy/ManageLeague/LeagueId=(@league.LeagueId)" style="flex-grow:1"><i class="fa-solid fa-gear"></i></a>
                         </div>
 
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Pos.</th>
-                                    <th>Team</th>
-                                    <th>Points</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1.</td>
-                                    <td>test team</td>
-                                    <td>400</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        @if(league.Teams is not null)
+                        {
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Pos.</th>
+                                        <th>Team</th>
+                                        <th>Points</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < league.Teams.Count; i++)
+                                    {
+                                        <tr>
+                                            <td>@(i+1).</td>
+                                            <td>@league.Teams[i].Name</td>
+                                            <td>@(league.Teams[i].TotalPoints) pts</td>
+                                        </tr>
+                                    }         
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <p>No teams in this league currently</p>
+                        }
+
                     </div>
                 }
             }
@@ -83,17 +95,32 @@ else
 
 @code {
     List<FantasyTeamModel> teams = new();
-    FantasyTeamModel team1 = new();
+    FantasyTeamModel team1 = new()
+    {
+        TeamId = Guid.NewGuid().ToString(),
+        Name = "Test team",
+        OwnerId = "63094b5f-7812-471c-b526-de1481051039",
+        LeagueId = "3e2a4e42-08f0-481c-935b-17738be68334",
+        CreatedDate = DateTime.Now,
+        BudgetRemaining = 100.0,
+        TotalTeamValue = 50.5
+    };
+
     FantasyTeamModel team2 = new();
 
     List<FantasyLeagueModel> leagues = new();
 
     protected override async Task OnInitializedAsync()
     {
-        leagues = await leagueData.GetLeaguesByUserId(appState.currentUser.UserId);
+        leagues = await leagueData.GetAllLeagues();
+
+        foreach(var league in leagues)
+        {
+            if (league.OwnerId != appState.currentUser.UserId)
+                leagues.Remove(league);
+        }
 
         teams.Add(team1);
         teams.Add(team2);
     }
-
 }
