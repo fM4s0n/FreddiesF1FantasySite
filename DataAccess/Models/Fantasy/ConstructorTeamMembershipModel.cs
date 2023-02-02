@@ -3,7 +3,7 @@ using DataAccess.Dictionaries.Fantasy;
 
 namespace DataAccess.Models.Fantasy;
 
-public class ConstructorTeamMembership
+public class ConstructorTeamMembershipModel
 {
     //id for db
     public string ConstructorTeamMembershipId { get; set; } = string.Empty;

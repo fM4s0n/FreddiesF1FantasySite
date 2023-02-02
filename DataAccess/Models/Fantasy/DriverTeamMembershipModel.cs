@@ -7,7 +7,7 @@ namespace DataAccess.Models.Fantasy;
 /// Tracks a driver for a specific team - due to boosts, 
 /// a driver can score different points depending on the team they are a member of
 /// </summary>
-public class DriverTeamMembership
+public class DriverTeamMembershipModel
 {
     //id for db
     public string DriverTeamMembershipId { get; set; } = string.Empty;

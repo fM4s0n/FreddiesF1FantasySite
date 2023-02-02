@@ -3,12 +3,15 @@
 @using DataAccess.Models.Fantasy
 @using DataAccess.Models
 @using DataAccess.Models.General
+@using DataAccess.Dictionaries.Fantasy
 @using DataAccess.Database
 @using DataAccess.API
 @using DataAccess.Services
 @using Newtonsoft.Json
 
 @inject ITeamData teamData
+@inject IConstructorTeamMembershipData ctmData
+@inject IDriverTeamMembershipData dtmData
 @inject ApiService api
 @inject AppStateService appState
 @inject NavigationManager navMan
@@ -24,19 +27,75 @@
             <input type="text" @bind=team.Name/>
             <br/><br />
 
-            <label>Team Value</label>
-            <p>@team.TotalTeamValue</p>
+            <label>Current Team Value</label>
+            <p>@team.CurrentTeamValue</p>
+
+            <label>Purchased Team Value</label>
+            <p>@team.PurchasedTeamValue</p>
 
             <label>Team budget remaining</label>
             <p>@team.BudgetRemaining</p>
 
-            <label>Selected Constructor</label>
-            <select>
+            <label>Constructor</label>
+            @if(team.Constructors.Count > 1)
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Constructor</th>
+                            <th>Points scored</th>
+                            <th>Current Value</th>
+                            <th>Purchased Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(ConstructorTeamMembershipModel ctm in team.Constructors)
+                        {
+                            <tr>
+                                <td>@ctm.ConstructorName</td>
+                                <td>@ctm.PointsScored</td>
+                                <td>£@(ctm.CurrentValue)m</td>
+                                <td>£@(ctm.PurchasedValue)m</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
+
+            @*<select>
                 @foreach(var constructor in constructors)
                 {
-                    <option value="@constructor.ConstructorId" selected="@(constructor.ConstructorId == team.Constructors[0].ConstructorId)">@constructor.Name</option>
+                    <option value="@constructor.ConstructorId" selected="@(constructor.ConstructorId == team.Constructors[0].ConstructorId)">@constructor.Name - @ConstructorValueDictionary.GetCurrentValue(constructor.ConstructorId)m</option>
                 }
-            </select>
+            </select>*@
+
+            <label>Drivers</label>
+            @if(team.Drivers.Count > 1)
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Constructor</th>
+                            <th>Points scored</th>
+                            <th>Current Value</th>
+                            <th>Purchased Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(DriverTeamMembershipModel dtm in team.Drivers)
+                        {
+                            <tr>
+                                <td>@dtm.DriverName</td>
+                                <td>@dtm.PointsScored</td>
+                                <td>£@(dtm.CurrentValue)m</td>
+                                <td>£@(dtm.PurchasedValue)m</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
         </div>
     }
     else
@@ -58,6 +117,10 @@ else
 
     //List of constructors for user to select for their team - get from api
     List<ConstructorStandingsModel.Constructor> constructors = new();
+    List<DriverStandingsModel.Driver> drivers = new();
+
+    List<ConstructorTeamMembershipModel> CTMs = new();
+    List<DriverTeamMembershipModel> DTMs = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -71,6 +134,9 @@ else
         GetListOfConstructors();
     }
 
+    /// <summary>
+    /// Get a list of constructors from the API that a user can choose from for their team
+    /// </summary>
     private async void GetListOfConstructors()
     {
         var json = await ApiService.GetConstructorStandingsAsync(DateTime.Now.Year.ToString());
@@ -81,31 +147,64 @@ else
         }
     }
 
-    private void CompleteTeamInfo()
+    /// <summary>
+    /// Get a list of drivers from the API that a user can choose from for their team
+    /// </summary>
+    private async void GetListOfDrivers()
     {
-        //fill out the driver and constructor lists
-        team.Drivers = GetTeamDrivers().Count > 0 ? GetTeamDrivers() : null;
-        team.Constructors = GetTeamConstructors().Count > 0 ? GetTeamConstructors() : null;
-
-        //calculate total team value
-        if(team.Drivers != null)
+        var json = await ApiService.GetDriverStandingsAsync(DateTime.Now.Year.ToString());
+        DriverStandingsModel.Root deserialised = JsonConvert.DeserializeObject<DriverStandingsModel.Root>(json);
+        @foreach(DriverStandingsModel.DriverStandings d in deserialised.MRData.StandingsTable.StandingsLists[0].DriverStandings)
         {
-            foreach (var driver in team.Drivers)            
-                team.TotalTeamValue += driver.CurrentValue;
+            drivers.Add(d.Driver);
         }
     }
 
-    private List<DriverTeamMembership> GetTeamDrivers()
-    {
-        List<DriverTeamMembership> drivers = new();
 
-        return drivers;
+    /// <summary>
+    /// Fill out the driver and constructor list properties of the team
+    /// </summary>
+    private void CompleteTeamInfo()
+    {
+        //fill out the driver and constructor lists
+        team.Drivers = DTMs.Count > 0 ? DTMs : null;
+        team.Constructors = CTMs.Count > 0 ? CTMs : null;
+
+        //calculate total team value
+        //if(team.Drivers != null)
+        //{
+        //    foreach (var driver in team.Drivers)            
+        //        team.CurrentTeamValue += driver.CurrentValue;
+        //}
     }
 
-    private List<ConstructorTeamMembership> GetTeamConstructors()
+    /// <summary>
+    /// get the drivers which are part of the team
+    /// </summary>
+    private async void GetTeamDrivers()
     {
-        List<ConstructorTeamMembership> constructors = new();
+        //get all dtms from the db
+        DTMs = await dtmData.GetAllDriverTeamMemberships();
 
-        return constructors;
+        //remove any from the list that aren't from tor team
+        foreach(DriverTeamMembershipModel dtm in DTMs)
+        {
+            if(dtm.TeamId != team.TeamId)
+                DTMs.Remove(dtm);
+        }
+    }
+
+    /// <summary>
+    /// get a list of the constructors that are part of the team
+    /// </summary>
+    private async void GetTeamConstructors()
+    {      
+        CTMs = await ctmData.GetAllConstructorTeamMemberships();
+
+        foreach(ConstructorTeamMembershipModel ctm in CTMs)
+        {
+            if(ctm.TeamId != team.TeamId)
+                CTMs.Remove(ctm);
+        }
     }
 }

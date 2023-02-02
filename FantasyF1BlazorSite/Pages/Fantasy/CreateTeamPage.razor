@@ -1,39 +1,160 @@
 ﻿@page "/Fantasy/CreateTeam"
 
 @using DataAccess.Models.Fantasy
+@using DataAccess.Dictionaries.Fantasy
 @using DataAccess.Models
 @using DataAccess.Database
 @using DataAccess.API
+@using DataAccess.Models.General;
 @using DataAccess.Services
+@using Newtonsoft.Json
 
 @inject ITeamData teamData
 @inject ApiService api
 @inject AppStateService appState
 @inject NavigationManager navMan
 
+<head>
+    <title>Create team</title>
+</head>
+
 @if(appState.isLoggedIn)
 {
     <h3>Create a new Fantasy Team</h3>
 
-    <form id="create-team">
-        <label>Team name</label>
-        <input type="text" class="create-team-imput" @bind="team.Name" />
-        <br />  <br />
+    if(setUpdone)
+    {
+        <form id="create-team">
+            <label>Team name</label>
+            <input type="text" class="create-team-imput" @bind="team.Name" />
+            <br />  <br />
 
-        <button type="submit" @onclick="OnSubmit">Create Team</button>
-        @if(nameTaken)
-        {
-            <p>name already taken</p>
-        }
-    </form>
+            <label for="selectConstructor">Select Constructor</label>
+            <select @bind="@team.Drivers[0].DriverId" id="selectConstructor">
+                @foreach(var c in availableConstructrors)
+                {
+                    <option value="@c.BaseConstructorId">@c.BaseConstructorName</option>
+                }
+            </select>
+            <br/>
+@*
+            @for(int i = 0; i < 4; i++)
+            {
+                int local = i;
+                <label for="selectDriver">Select Driver @(i + 1)</label>
+                <select @bind="@selectedDrivers[i].DriverId" id=$"selectDriver{local+1}">
+
+                    @foreach(var d in drivers)
+                    {
+                        if(selectedDrivers.Contains(d))
+                            continue;
+
+                        <option value="@d.DriverId">@d.FullName</option>
+                    }
+                </select>
+                <br />
+            }
+            <br/>*@
+
+            <label for="selectDriver1">Select Driver 1</label>
+            <select id="selectDriver1" @bind="@(selectedDrivers[0])">
+
+                @foreach(var d in availableDrivers)
+                {
+                    if(selectedDrivers.Contains(d))
+                        continue;
+
+                    <option value="@d.BaseDriverId">@d.BaseDriverName</option>
+                }
+            </select>
+            <br />
+
+            <div>
+                <label for="selectDriver2">Select Driver 2</label>
+                <select @bind="@selectedDrivers[1].DriverId" id="selectDriver2">
+                    @foreach(var d in availableDrivers)
+                    {
+                        if(selectedDrivers.Contains(d))
+                            continue;
+
+                        <option value="@d.DriverId">@d.FullName</option>
+                    }
+                </select>
+                <br />
+            </div>
+
+
+            <p>Team Value: @(team.CurrentTeamValue)</p>
+            <p>Budget remaining: @team.BudgetRemaining</p>
+
+            <button type="submit" @onclick="OnSubmit">Create Team</button>
+            @if(nameTaken)
+            {
+                <p>name already taken</p>
+            }
+        </form>
+    }
 }
-
 
 
 @code {
     FantasyTeamModel team = new();
     List<FantasyTeamModel> usersCurrentTeams = new();
     bool nameTaken = false;
+    bool setUpdone = false;
+
+    bool driver1Selected = false;
+
+    List<BaseConstructorModel> availableConstructrors = new();
+    BaseConstructorModel selectedConstructor = new();
+
+    List<BaseDriverModel> availableDrivers = new();
+    List<BaseDriverModel.Driver> selectedDrivers = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        //get list of constructors to pick from
+        await GetConstructors();
+
+        await GetDrivers();
+
+        //add 4 empty drivers to the selectedDrivers list
+        for(int i = 0; i < 4; i++)        
+            selectedDrivers.Add(new DriverStandingsModel.Driver());
+
+        setUpdone = true;
+    }
+
+    private async Task GetConstructors()
+    {
+        var json = await ApiService.GetConstructorStandingsAsync(DateTime.Now.Year.ToString());
+        ConstructorStandingsModel.Root deserialised = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(json);
+        @foreach (ConstructorStandingsModel.ConstructorStanding c in deserialised.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
+        {
+            BaseConstructorModel bcm = new();
+            bcm.BaseConstructorId = c.Constructor.ConstructorId;
+            bcm.BaseConstructorName = c.Constructor.Name;
+            bcm.BaseConstructorValue = ConstructorValueDictionary.GetCurrentValue(c.Constructor.ConstructorId);
+
+            availableConstructrors.Add(bcm);
+        }
+    }
+
+    private async Task GetDrivers()
+    {
+        var json = await ApiService.GetDriverStandingsAsync(DateTime.Now.Year.ToString());
+        DriverStandingsModel.Root deserialised = JsonConvert.DeserializeObject<DriverStandingsModel.Root>(json);
+        @foreach(DriverStandingsModel.DriverStandings d in deserialised.MRData.StandingsTable.StandingsLists[0].DriverStandings)
+        {
+            BaseDriverModel bdm = new();
+            bdm.BaseDriverId = d.Driver.DriverId;
+            bdm.BaseDriverName = d.Driver.FullName;
+            bdm.BaseDriverValue = DriverValueDictionary.GetDriverValue(d.Driver.DriverId);
+
+            availableDrivers.Add(bdm);
+        }
+    }
 
     public async void OnSubmit()
     {
