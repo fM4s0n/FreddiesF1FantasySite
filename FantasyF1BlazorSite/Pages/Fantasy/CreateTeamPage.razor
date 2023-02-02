@@ -26,11 +26,11 @@
     {
         <form id="create-team">
             <label>Team name</label>
-            <input type="text" class="create-team-imput" @bind="team.Name" />
+            <input type="text" class="create-team-imput" @bind="newTeam.Name" />
             <br />  <br />
 
             <label for="selectConstructor">Select Constructor</label>
-            <select @bind="@team.Drivers[0].DriverId" id="selectConstructor">
+            <select @bind="@newTeam.Drivers[0].DriverId" id="selectConstructor">
                 @foreach(var c in availableConstructrors)
                 {
                     <option value="@c.BaseConstructorId">@c.BaseConstructorName</option>
@@ -57,7 +57,7 @@
             <br/>*@
 
             <label for="selectDriver1">Select Driver 1</label>
-            <select id="selectDriver1" @bind="@(selectedDrivers[0])">
+            <select id="selectDriver1" @bind="@selectedDrivers[0]">
 
                 @foreach(var d in availableDrivers)
                 {
@@ -84,8 +84,8 @@
             </div>
 
 
-            <p>Team Value: @(team.CurrentTeamValue)</p>
-            <p>Budget remaining: @team.BudgetRemaining</p>
+            <p>Team Value: @(newTeam.CurrentTeamValue)</p>
+            <p>Budget remaining: @newTeam.BudgetRemaining</p>
 
             <button type="submit" @onclick="OnSubmit">Create Team</button>
             @if(nameTaken)
@@ -98,12 +98,10 @@
 
 
 @code {
-    FantasyTeamModel team = new();
-    List<FantasyTeamModel> usersCurrentTeams = new();
+    FantasyTeamModel newTeam = new();
+    List<FantasyTeamModel> usersOwnedTeams = new();
     bool nameTaken = false;
     bool setUpdone = false;
-
-    bool driver1Selected = false;
 
     List<BaseConstructorModel> availableConstructrors = new();
     BaseConstructorModel selectedConstructor = new();
@@ -121,7 +119,7 @@
 
         //add 4 empty drivers to the selectedDrivers list
         for(int i = 0; i < 4; i++)        
-            selectedDrivers.Add(new DriverStandingsModel.Driver());
+            selectedDrivers.Add(new BaseDriverModel());
 
         setUpdone = true;
     }
@@ -158,30 +156,30 @@
 
     public async void OnSubmit()
     {
-        team.TeamId = Guid.NewGuid().ToString();
-        team.OwnerId = appState.currentUser.UserId;
-        team.CreatedDate = DateTime.Now;
+        newTeam.TeamId = Guid.NewGuid().ToString();
+        newTeam.OwnerId = appState.currentUser.UserId;
+        newTeam.CreatedDate = DateTime.Now;
 
         //check if user has a team with that name
-        usersCurrentTeams = await teamData.GetAllTeams();
-        foreach (var t in usersCurrentTeams)
+        usersOwnedTeams = await teamData.GetAllTeams();
+        foreach (var t in usersOwnedTeams)
         {
             if (t.OwnerId != appState.currentUser.UserId)
-                usersCurrentTeams.Remove(t);
+                usersOwnedTeams.Remove(t);
         }
 
-        foreach (var t in usersCurrentTeams)
+        foreach (var t in usersOwnedTeams)
         {
-            if (t.Name == team.Name)
+            if (t.Name == newTeam.Name)
             {
                 nameTaken = true;
                 return;
             }
         }
 
-        await teamData.InsertTeam(team);
+        await teamData.InsertTeam(newTeam);
 
         //navigate to manage team
-        navMan.NavigateTo($"/Fantasy/ManageTeam{team.TeamId}", false);
+        navMan.NavigateTo($"/Fantasy/ManageTeam{newTeam.TeamId}", false);
     }
 }
