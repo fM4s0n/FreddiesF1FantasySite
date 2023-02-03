@@ -30,35 +30,18 @@
             <br />  <br />
 
             <label for="selectConstructor">Select Constructor</label>
-            <select @bind="@newTeam.Constructors[0].ConstructorId" id="selectConstructor">
+            <select id="selectConstructor" @onchange="@((args) => HandleSelectChanged(args, 0))">
+                <option disabled selected value="0">------------</option>
                 @foreach(var c in availableConstructrors)
                 {
                     <option value="@c.ConstructorId">@c.ConstructorName</option>
                 }
             </select>
             <br/>
-@*
-            @for(int i = 0; i < 4; i++)
-            {
-                int local = i;
-                <label for="selectDriver">Select Driver @(i + 1)</label>
-                <select @bind="@selectedDrivers[i].DriverId" id=$"selectDriver{local+1}">
-
-                    @foreach(var d in drivers)
-                    {
-                        if(selectedDrivers.Contains(d))
-                            continue;
-
-                        <option value="@d.DriverId">@d.FullName</option>
-                    }
-                </select>
-                <br />
-            }
-            <br/>*@
 
             <label for="selectDriver1">Select Driver 1</label>
-            <select id="selectDriver1" @bind="@newTeam.Drivers[0].DriverId">
-
+            <select id="selectDriver1" @onchange="@((args) => HandleSelectChanged(args, 1))">
+                <option disabled selected value="0">------------</option>
                 @foreach(var d in availableDrivers)
                 {                
                     <option value="@d.DriverId">@d.DriverName</option>
@@ -66,27 +49,36 @@
             </select>
             <br />
 
-            <div>
-                <label for="selectDriver2">Select Driver 2</label>
-                <select @bind="@newTeam.Drivers[1].DriverId" id="selectDriver2">
-                    @foreach(var d in availableDrivers.Where(t => t.DriverId != newTeam.Drivers[0].DriverId))
-                    {
-                        <option value="@d.DriverId">@d.DriverName</option>
-                    }
-                </select>
-                <br />
-            </div>
+            <label for="selectDriver2">Select Driver 2</label>
+            <select id="selectDriver2" @onchange="@((args) => HandleSelectChanged(args, 2))">
+                <option disabled selected value="0">------------</option>
+                @foreach(var d in availableDrivers)
+                {
+                    <option value="@d.DriverId">@d.DriverName</option>
+                }
+            </select>
+            <br />
 
-             <div>
-                <label for="selectDriver3">Select Driver 3</label>
-                <select @bind="@newTeam.Drivers[1].DriverId" id="selectDriver3">
-                    @foreach(var d in availableDrivers.Where(t => t.DriverId != newTeam.Drivers[0].DriverId && t.DriverId != newTeam.Drivers[1].DriverId))
-                    {
-                        <option value="@d.DriverId">@d.DriverName</option>
-                    }
-                </select>
-                <br />
-            </div>
+            <label for="selectDriver3">Select Driver 3</label>
+            <select id="selectDriver3" @onchange="@((args) => HandleSelectChanged(args, 3))">
+                <option disabled selected value="0">------------</option>
+                @foreach(var d in availableDrivers.Where(t => t.DriverId != newTeam.Drivers[0].DriverId && t.DriverId != newTeam.Drivers[1].DriverId))
+                {
+                    <option value="@d.DriverId">@d.DriverName</option>
+                }
+            </select>
+            <br />
+
+            <label for="selectDriver3">Select Driver 4</label>
+            <select id="selectDriver3" @onchange="@((args) => HandleSelectChanged(args, 4))">
+                <option disabled selected value="0">------------</option>
+                @foreach(var d in availableDrivers.Where(t => t.DriverId != newTeam.Drivers[0].DriverId && t.DriverId != newTeam.Drivers[1].DriverId))
+                {
+                    <option value="@d.DriverId">@d.DriverName</option>
+                }
+            </select>
+            <br />
+
 
             <p>Team Value: @(newTeam.CurrentTeamValue)</p>
             <p>Budget remaining: @newTeam.BudgetRemaining</p>
@@ -153,16 +145,44 @@
         }
     }
 
-    //private async Task RefreshAvailableLists()
-    //{
-    //    await GetDrivers();
-    //    foreach(var d in availableDrivers)
-    //    {
-    //        foreach (var driver in newTeam.Drivers)
-    //            if (driver.DriverId == d.DriverId)
-    //                availableDrivers.Remove(d);
-    //    }
-    //}
+    /// <summary>
+    /// When on changed is invoked, set the selected driver and refresh the lists 
+    /// </summary>
+    /// <param name="args">value of the select item that has been changed</param>
+    /// <param name="selectNumber">select item changed by the user</param>
+    /// <returns></returns>
+    private async Task HandleSelectChanged(ChangeEventArgs args, int selectNumber)
+    {
+        if(args is not null)
+        {
+
+            if(selectNumber == 0)            
+                newTeam.Constructors[0].ConstructorId = args.Value.ToString();
+
+            else            
+                newTeam.Drivers[selectNumber - 1].DriverId = args.Value.ToString();
+
+            availableDrivers.Remove((DriverTeamMembershipModel)args.Value);
+
+            //await RefreshAvailableLists();            
+        }
+    }
+
+    private async Task RefreshAvailableLists()
+    {
+        //await GetDrivers();
+        foreach(var d in availableDrivers.ToList())        
+            foreach(var driver in newTeam.Drivers)
+                if(driver.DriverId == d.DriverId)
+                    availableDrivers.Remove(d);
+
+
+        //await GetConstructors();
+        //foreach (var c in availableConstructrors.ToList())
+        //    foreach (var constructor in newTeam.Constructors)
+        //        if (constructor.ConstructorId == c.ConstructorId)
+        //            availableConstructrors.Remove(c);
+    }
 
     public async void OnSubmit()
     {
