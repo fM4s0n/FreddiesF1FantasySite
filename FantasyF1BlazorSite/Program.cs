@@ -11,10 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-builder.Services.AddSingleton<ApiService>();
 builder.Services.AddSingleton<AppStateService>();
-builder.Services.AddSingleton<DriverIdDictionary>();
-builder.Services.AddSingleton<ConstructorIdDictionary>();
 
 builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddTransient<IUserData, UserData>();

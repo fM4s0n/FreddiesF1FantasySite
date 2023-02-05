@@ -1,6 +1,6 @@
 ﻿namespace DataAccess.API;
 
-public class ApiService
+public static class ApiService
 {/// <summary>
  /// Gets current driver standings as of most recent race
  /// </summary>

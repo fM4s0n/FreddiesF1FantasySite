@@ -1,6 +1,6 @@
 ﻿namespace DataAccess.Dictionaries;
 
-public class ConstructorIdDictionary
+public static class ConstructorIdDictionary
 {
     private static readonly Dictionary<string, string> ConstructorIDs = new()
     {
