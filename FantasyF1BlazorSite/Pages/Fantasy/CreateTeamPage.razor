@@ -10,6 +10,8 @@
 @using Newtonsoft.Json
 
 @inject ITeamData teamData
+@inject IDriverTeamMembershipData dtmData
+@inject IConstructorTeamMembershipData ctmData
 @inject AppStateService appState
 @inject NavigationManager navMan
 
@@ -90,13 +92,23 @@
                     <option value="@d.DriverId" selected="@(newTeam.Drivers[3].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
                 }
             </select>
+            <br />
+
+            <label for="selectDriverBoost">Select Driver to boost</label>
+            <select id="selectDriverBoost" @onchange="@((args) => HandleSelectChanged(args, 5))">
+                <option disabled value="0" selected="@(newTeam.BoostedDriverId == "")">-----------------------------------</option>
+                @foreach(var d in availableDriversToBoost)
+                {
+                    <option value="@d.DriverId" selected="@(newTeam.BoostedDriverId == d.DriverId)">@d.DriverName</option>
+                }
+            </select>
             <br /> <br />
 
 
-            <a>Team Value: £@(newTeam.CurrentTeamValue.ToString("F"))m</a> <br />
-            <a>Budget remaining: £@(newTeam.BudgetRemaining.ToString("F"))m</a> <br />
+            <p class="@SetBudgetTextColourClass">Team Value: £@(newTeam.CurrentTeamValue.ToString("F"))m</p>
+            <p>Budget remaining: £@(newTeam.BudgetRemaining.ToString("F"))m</p> <br />
 
-            <button type="submit" @onclick="OnSubmit">Create Team</button>
+            <button type="submit" disabled="@(!allChecksPass)" @onclick="OnSubmit">Create Team</button>
 
             @if(nameTaken)
             {
@@ -108,10 +120,13 @@
 
 
 @code {
+    private string ColourCode { get; set; } = "";
+
     FantasyTeamModel newTeam = new();
     List<FantasyTeamModel> usersOwnedTeams = new();
     bool nameTaken = false;
     bool setUpdone = false;
+    bool allChecksPass = false;
 
     //lists of drivers and constructors to choose from
     List<ConstructorTeamMembershipModel> availableConstructrors = new();
@@ -120,20 +135,34 @@
     List<DriverTeamMembershipModel> availableDrivers3 = new();
     List<DriverTeamMembershipModel> availableDrivers4 = new();
 
+    //List of drivers that are available to boost- i.e only ones selected in the team
+    List<DriverTeamMembershipModel> availableDriversToBoost = new();
+
     //List<List<DriverTeamMembershipModel>> availableDriverLists = new();    
 
     protected override async Task OnInitializedAsync()
     {
+        usersOwnedTeams = await teamData.GetAllTeams();
+
+        foreach(var t in usersOwnedTeams)
+        {
+            if(t.OwnerId != appState.currentUser.UserId)
+                usersOwnedTeams.Remove(t);
+        }
+
         //get list of constructors to pick from
         await GetConstructors();
 
         await GetDrivers();
 
         //add 4 empty drivers to the team so we can insert a driver
-        for(int i = 0;i < 4; i++)        
-            newTeam.Drivers.Add(new DriverTeamMembershipModel(){DriverId ="0"});
+        for(int i = 0; i < 4; i++)        
+            newTeam.Drivers.Add(new DriverTeamMembershipModel(){ DriverId ="0" });
 
         newTeam.Constructors.Add(new ConstructorTeamMembershipModel());
+
+        for (int i = 0; i < 4; i++)
+            availableDriversToBoost.Add(new DriverTeamMembershipModel() { DriverId = "0" });
 
         setUpdone = true;
     }
@@ -160,7 +189,7 @@
         {
             DriverTeamMembershipModel dri = new();
             dri.DriverId = d.Driver.DriverId;
-            
+
             availableDrivers1.Add(dri);
             availableDrivers2.Add(dri);
             availableDrivers3.Add(dri);
@@ -186,7 +215,7 @@
             //if constructor select box selected
             if(selectNumber == 0)            
                 newTeam.Constructors[0].ConstructorId = args.Value.ToString();
-            else
+            else if(selectNumber > 0 && selectNumber < 5)
             {   //depending on the select box chosen, remove the selected driver from each of the other boxes so they can't be selected again              
                 if(selectNumber == 1)
                 {
@@ -247,6 +276,8 @@
                 }
                 //add the selected driver to the team in the relevent index
                 newTeam.Drivers[selectNumber - 1].DriverId = args.Value.ToString();
+                //add the selected driver to the available drivers to boost
+                availableDriversToBoost[selectNumber - 1].DriverId = (args.Value.ToString());
 
                 //re order the lists by value
                 availableDrivers1 = availableDrivers1.OrderByDescending(t => t.CurrentValue).ToList();
@@ -254,37 +285,79 @@
                 availableDrivers3 = availableDrivers3.OrderByDescending(t => t.CurrentValue).ToList();
                 availableDrivers4 = availableDrivers4.OrderByDescending(t => t.CurrentValue).ToList();
             }
+            else
+            {
+                //if 5 is selected, they are updating their boosted driver
+                if(selectNumber == 5)
+                {
+                    newTeam.BoostedDriverId = args.Value.ToString();
+                }
+            }
             //calc budget remaining
             newTeam.BudgetRemaining = 100 - newTeam.CurrentTeamValue;
+
+            CheckInputs();
         }
     }
 
     public async void OnSubmit()
     {
+        //set up data about team
         newTeam.TeamId = Guid.NewGuid().ToString();
         newTeam.OwnerId = appState.currentUser.UserId;
         newTeam.CreatedDate = DateTime.Now;
 
-        //check if user has a team with that name
-        usersOwnedTeams = await teamData.GetAllTeams();
-        foreach (var t in usersOwnedTeams)
-        {
-            if (t.OwnerId != appState.currentUser.UserId)
-                usersOwnedTeams.Remove(t);
-        }
-
-        foreach (var t in usersOwnedTeams)
-        {
-            if (t.Name == newTeam.Name)
-            {
-                nameTaken = true;
-                return;
-            }
-        }
-
+        //insert the team into the db
         await teamData.InsertTeam(newTeam);
+
+        //insert constructor team membership(s) into db
+        foreach(ConstructorTeamMembershipModel ctm in newTeam.Constructors)
+        {
+            ctm.ConstructorTeamMembershipId = Guid.NewGuid().ToString();
+            ctm.TeamId = newTeam.TeamId;
+            ctm.CurrentlySelected = true;
+            ctm.PurchasedValue = ctm.CurrentValue;
+
+            await ctmData.InsertConstructorTeamMembership(newTeam.Constructors[0]);
+        }
+
+        //insert driver team meberships into db
+        foreach(DriverTeamMembershipModel dtm in newTeam.Drivers)
+        {
+            dtm.DriverTeamMembershipId = Guid.NewGuid().ToString();
+            dtm.TeamId = newTeam.TeamId;
+            dtm.CurrentlySelected = true;
+            dtm.PurchasedValue = dtm.CurrentValue;
+            await dtmData.InsertDriverTeamMembership(dtm);
+        }
 
         //navigate to manage team
         navMan.NavigateTo($"/Fantasy/ManageTeam{newTeam.TeamId}", false);
+    }
+
+    private void CheckInputs()
+    {
+        if(newTeam.Name != "" && newTeam.CurrentTeamValue <= 100 && newTeam.Constructors.All(t => t.ConstructorId != "0") && newTeam.Drivers.All(t => t.DriverId != "0") && usersOwnedTeams.All(r => r.Name != newTeam.Name))
+        {
+            allChecksPass = true;
+        }
+    }
+
+    private void SetBudgetTextColourClass()
+    {
+        if(newTeam.CurrentTeamValue < 100)
+        {
+            ColourCode = "black-Text-Class";
+        }
+
+        if(newTeam.CurrentTeamValue == 100)
+        {
+            ColourCode = "green-Text-Class";
+        }
+
+        if(newTeam.CurrentTeamValue > 100)
+        {
+            ColourCode = "red-Text-Class";
+        }
     }
 }

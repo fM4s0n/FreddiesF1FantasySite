@@ -20,8 +20,8 @@ public class ConstructorTeamMembershipData : IConstructorTeamMembershipData
 
     public Task InsertConstructorTeamMembership(ConstructorTeamMembershipModel ctm)
     {
-        string sql = @"INSERT INTO dbo.tblConstructorTeamMembership 
-                       VALUES(@ConstructorTeamMembershipId, @TeamId, @ConstructrId, @CurrentlySelected, @PointsScored, @PurchasedValue)";
+        string sql = @"INSERT INTO dbo.tblConstructorTeamMembership (ConstructorTeamMembershipId, TeamId, ConstructorId, PointsScored, PurchasedValue)
+                       VALUES(@ConstructorTeamMembershipId, @TeamId, @ConstructorId, @CurrentlySelected, @PointsScored, @PurchasedValue)";
 
         return _db.SaveData(sql, ctm);
     }

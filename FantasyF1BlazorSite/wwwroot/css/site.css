@@ -226,3 +226,15 @@ a, .btn-link {
     margin: 15px;
     padding: 15px;
 }
+
+.black-Text-Class{
+    color:black;
+}
+
+.green-Text-Class {
+    color: green;
+}
+
+.red-Text-Class {
+    color: red;
+}
