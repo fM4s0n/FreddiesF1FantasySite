@@ -7,7 +7,7 @@ public  class ConstructorValueDictionary
         {"alfa", 8.0},
         {"alphatauri", 6.5},
         {"alpine", 18.0},
-        {"aston", 7.0},
+        {"aston_martin", 7.0},
         {"ferrari", 23.0},
         {"haas", 7.0},
         {"mclaren", 15.0},
