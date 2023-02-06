@@ -21,6 +21,9 @@ public class DriverTeamMembershipModel
     //Driver full name - dont store use dictionary
     public string DriverName { get { return DriverNameDictionary.GetDriverName(DriverId); } }
 
+    //Which constructor the driver is currently driving for
+    public string ConstructorId { get { return DriverConstructorIdDisctionary.GetDriversConstructorId(DriverId); } }
+
     //Are they currenty on the team
     public bool CurrentlySelected { get; set; }
 
@@ -32,4 +35,7 @@ public class DriverTeamMembershipModel
 
     //current value - dont store, get from dictionary
     public double CurrentValue { get { return DriverValueDictionary.GetDriverValue(DriverId); } }
+
+    //2 boosts per driver per season
+    public int BoostsLeft { get; set; } = 2;
 }

@@ -33,7 +33,7 @@
                 <option disabled selected value="0">-----------------------------------</option>
                 @foreach(var c in availableConstructrors)
                 {
-                    <option value="@c.ConstructorId">@(c.ConstructorName) - £@(c.CurrentValue)m </option>
+                    <option value="@c.ConstructorId">@(c.ConstructorName) - £@(c.CurrentValue.ToString("F"))m </option>
                 }
             </select>
             <br/>
@@ -57,7 +57,7 @@
                 <option disabled value="0" selected="@(newTeam.Drivers[0].DriverId == "0")">-----------------------------------</option>
                 @foreach(var d in availableDrivers1)
                 {
-                    <option value="@d.DriverId" selected="@(newTeam.Drivers[0].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue)m</option>
+                    <option value="@d.DriverId" selected="@(newTeam.Drivers[0].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
                 }
             </select>
             <br />
@@ -67,7 +67,7 @@
                 <option disabled value="0" selected="@(newTeam.Drivers[1].DriverId == "0")">-----------------------------------</option>
                 @foreach(var d in availableDrivers2)
                 {
-                    <option value="@d.DriverId" selected="@(newTeam.Drivers[1].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue)m</option>
+                    <option value="@d.DriverId" selected="@(newTeam.Drivers[1].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
                 }
             </select>
             <br />
@@ -77,7 +77,7 @@
                 <option disabled value="0" selected="@(newTeam.Drivers[2].DriverId == "0")">-----------------------------------</option>
                 @foreach(var d in availableDrivers3)
                 {
-                    <option value="@d.DriverId" selected="@(newTeam.Drivers[2].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue)m</option>
+                    <option value="@d.DriverId" selected="@(newTeam.Drivers[2].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
                 }
             </select>
             <br />
@@ -87,14 +87,14 @@
                 <option disabled value="0" selected="@(newTeam.Drivers[3].DriverId == "0")">-----------------------------------</option>
                 @foreach(var d in availableDrivers4)
                 {
-                    <option value="@d.DriverId" selected="@(newTeam.Drivers[3].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue)m</option>
+                    <option value="@d.DriverId" selected="@(newTeam.Drivers[3].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
                 }
             </select>
             <br /> <br />
 
 
-            <a>Team Value: £@(newTeam.CurrentTeamValue)m</a> <br/>
-            <a>Budget remaining: £@(newTeam.BudgetRemaining)m</a> <br />
+            <a>Team Value: £@(newTeam.CurrentTeamValue.ToString("F"))m</a> <br />
+            <a>Budget remaining: £@(newTeam.BudgetRemaining.ToString("F"))m</a> <br />
 
             <button type="submit" @onclick="OnSubmit">Create Team</button>
 
@@ -142,7 +142,7 @@
     {
         var json = await ApiService.GetConstructorStandingsAsync(DateTime.Now.Year.ToString());
         ConstructorStandingsModel.Root deserialised = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(json);
-        @foreach (ConstructorStandingsModel.ConstructorStanding c in deserialised.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
+        foreach (ConstructorStandingsModel.ConstructorStanding c in deserialised.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
         {
             ConstructorTeamMembershipModel con = new();
             con.ConstructorId = c.Constructor.ConstructorId;
@@ -156,7 +156,7 @@
     {
         var json = await ApiService.GetDriverStandingsAsync(DateTime.Now.Year.ToString());
         DriverStandingsModel.Root deserialised = JsonConvert.DeserializeObject<DriverStandingsModel.Root>(json);
-        @foreach(DriverStandingsModel.DriverStandings d in deserialised.MRData.StandingsTable.StandingsLists[0].DriverStandings)
+        foreach(DriverStandingsModel.DriverStandings d in deserialised.MRData.StandingsTable.StandingsLists[0].DriverStandings)
         {
             DriverTeamMembershipModel dri = new();
             dri.DriverId = d.Driver.DriverId;
@@ -249,10 +249,10 @@
                 newTeam.Drivers[selectNumber - 1].DriverId = args.Value.ToString();
 
                 //re order the lists by value
-                //availableDrivers1 = availableDrivers1.OrderByDescending(t => t.CurrentValue).ToList();
-                //availableDrivers2 = availableDrivers2.OrderByDescending(t => t.CurrentValue).ToList();
-                //availableDrivers3 = availableDrivers3.OrderByDescending(t => t.CurrentValue).ToList();
-                //availableDrivers4 = availableDrivers4.OrderByDescending(t => t.CurrentValue).ToList();
+                availableDrivers1 = availableDrivers1.OrderByDescending(t => t.CurrentValue).ToList();
+                availableDrivers2 = availableDrivers2.OrderByDescending(t => t.CurrentValue).ToList();
+                availableDrivers3 = availableDrivers3.OrderByDescending(t => t.CurrentValue).ToList();
+                availableDrivers4 = availableDrivers4.OrderByDescending(t => t.CurrentValue).ToList();
             }
             //calc budget remaining
             newTeam.BudgetRemaining = 100 - newTeam.CurrentTeamValue;
