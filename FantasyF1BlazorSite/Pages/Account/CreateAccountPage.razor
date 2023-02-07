@@ -14,46 +14,44 @@
 <h1 style="text-align: center">Create account</h1>
 
 <form id="create-account">
-    <div>
-        <label for="accountFullName">Full name:</label>
-        <input type="text" id="accountFullName" class="create-account-input" @bind="user.FullName" />
-        <br /><br />
+    <label for="accountFullName">Full name:</label>
+    <input type="text" id="accountFullName" class="create-account-input" @bind="user.FullName" />
+    <br /><br />
 
-        <label for="accountUsername">Username:</label>
-        <input type="text" id="accountUsername" class="create-account-input" @bind="user.Username" />
-        <br /><br />
+    <label for="accountUsername">Username:</label>
+    <input type="text" id="accountUsername" class="create-account-input" @bind="user.Username" />
+    <br /><br />
 
-        <label for="accountPassword">Password</label>
-        <input type="password" id="accountPassword" class="create-account-input" @bind="user.Password" />
-        <br /><br />
+    <label for="accountPassword">Password</label>
+    <input type="password" id="accountPassword" class="create-account-input" @bind="user.Password" />
+    <br /><br />
 
-        <label for="selectFavDriver">Favourite Driver</label>
-        <select id="selectFavDriver" class="create-account-input" @bind="@user.FavouriteDriverName">
-            <option>---Select driver---</option>
+    <label for="selectFavDriver">Favourite Driver</label>
+    <select id="selectFavDriver" class="create-account-input" @bind="@user.FavouriteDriverName">
+        <option>---Select driver---</option>
 
-            @if (drivers is not null)
+        @if (drivers is not null)
+        {
+            @foreach (var driver in drivers.MRData.StandingsTable.StandingsLists[0].DriverStandings)
             {
-                @foreach (var driver in drivers.MRData.StandingsTable.StandingsLists[0].DriverStandings)
-                {
-                    <option value="@driver.Driver.FullName">@driver.Driver.FullName</option>
-                }
+                <option value="@driver.Driver.FullName">@driver.Driver.FullName</option>
             }
-        </select> <br /><br />
+        }
+    </select> <br /><br />
 
-        <label for="selectFavConstructor">Favourite Constructor</label>
-        <select id="selectFavConstructor" class="create-account-input" @bind="@user.FavouriteConstructorName">
-            <option>---Select constructor---</option>
+    <label for="selectFavConstructor">Favourite Constructor</label>
+    <select id="selectFavConstructor" class="create-account-input" @bind="@user.FavouriteConstructorName">
+        <option>---Select constructor---</option>
 
-            @if (constructors is not null)
+        @if (constructors is not null)
+        {
+            @foreach (var constructor in constructors.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
             {
-                @foreach (var constructor in constructors.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
-                {
-                    <option value="@constructor.Constructor.Name">@constructor.Constructor.Name</option>
-                }
+                <option value="@constructor.Constructor.Name">@constructor.Constructor.Name</option>
             }
-        </select><br /><br />
-        <button type="submit" style="width:20%; float:right" @onclick="CheckUsernameIsUnique">Save</button>
-    </div>
+        }
+    </select><br /><br />
+    <button type="submit" style="width:20%; float:right" @onclick="CheckUsernameIsUnique">Save</button>
 </form>
 
 @code {

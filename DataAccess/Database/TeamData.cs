@@ -32,7 +32,7 @@ public class TeamData : ITeamData
     /// </summary>
     /// <param name="userId"></param>
     /// <returns>List of all teams owned by a user</returns>
-    public Task<List<FantasyTeamModel>> GetTeamsByUserId(int userId)
+    public Task<List<FantasyTeamModel>> GetTeamsByUserId(string userId)
     {
         string sql = "SELECT * FROM tblTeam WHERE UserId = @userId";
 

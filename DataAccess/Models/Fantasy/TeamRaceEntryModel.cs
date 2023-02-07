@@ -1,6 +1,4 @@
-﻿
-namespace DataAccess.Models.Fantasy;
-
+﻿namespace DataAccess.Models.Fantasy;
 
 /// <summary>
 /// A team entry represents a team at each race weekend in a season. 
@@ -8,9 +6,11 @@ namespace DataAccess.Models.Fantasy;
 /// </summary>
 public class TeamRaceEntryModel
 {
-    public string TeamRaceEntryId { get; set; } = string.Empty; // should ids be GUID??
+    public string TeamRaceEntryId { get; set; } = string.Empty;
 
     public int Season { get; set; }
+
+    public int Round { get; set; }
 
     public string TeamId { get; set; } = string.Empty;
 

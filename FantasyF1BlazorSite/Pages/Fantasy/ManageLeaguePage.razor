@@ -11,9 +11,11 @@
 @inject ILeagueData leagueData
 @inject ITeamData teamData
 
-<h2>Manage League</h2>
+<h2>Manage My League</h2>
+<h3>@currentLeague.Name</h3>
 
 <h3>All teams:</h3>
+
 @foreach(FantasyTeamModel team in teams)
 {
     <div class="manage-league-team-control">
@@ -37,7 +39,7 @@
     [Parameter]
     public string passedLeagueId { get; set; } = string.Empty;
 
-    FantasyLeagueModel league = new();
+    FantasyLeagueModel currentLeague = new();
     List<FantasyTeamModel> teams = new();
     List<UserModel> allUsers = new();
 
@@ -45,17 +47,22 @@
     {
         allUsers = await userdata.GetAllUsers();
 
-        List<FantasyLeagueModel> leagues = await leagueData.GetAllLeagues();
-        foreach(var l in leagues)
+        List<FantasyLeagueModel> allLeagues = await leagueData.GetAllLeagues();
+        foreach(var l in allLeagues)
         {
             if (l.LeagueId == passedLeagueId)
-                league = l;
+                currentLeague = l;
         }
 
         //Get all teams in the league
         teams = await teamData.GetTeamsByLeagueId(passedLeagueId);
     }
 
+    /// <summary>
+    /// Get the user name of the owner of a team
+    /// </summary>
+    /// <param name="Ownerid"></param>
+    /// <returns></returns>
     private string GetUsername(string Ownerid)
     {
         UserModel teamOwner = new();

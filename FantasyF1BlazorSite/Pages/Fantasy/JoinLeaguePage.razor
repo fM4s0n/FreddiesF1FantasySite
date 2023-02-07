@@ -1,5 +1,113 @@
-﻿<h3>JoinLeaguePage</h3>
+﻿@page "/Fantasy/JoinLeague"
+
+@using DataAccess.Database
+@using DataAccess.Services
+@using DataAccess.Models.Fantasy
+@using DataAccess.Models
+
+@inject AppStateService appState
+@inject ILeagueData leagueData
+@inject ITeamData teamData
+
+<h2>Join a league</h2>
+
+@if(allLeagues is not null)
+{
+    <form id="join-league">
+        <label>Enter league name</label>
+        <input type="text" @bind="leagueNameInput" />
+        <button type="submit" @onclick="CheckLeagueExists">Next</button>
+
+        @if(leagueRequiresPassword)
+        {
+            <label>Enter league password</label>
+            <input type="text" @bind="leaguePasswordInput">
+            <button type="submit" @onclick="CheckPassword">Next</button>
+        }
+        else        
+            @(showTeamsList = true);
+
+        @if(showTeamsList == true)
+        {
+            <label>Select which team you want to join this league</label>
+
+            <select>
+                @foreach(FantasyTeamModel team in allUsersTeams)
+                {
+                    <option value="@team.TeamId">@team.Name</option>
+                }
+            </select>
+
+            <button type="submit">Join league</button>
+        }
+
+    </form>
+}
+
+
 
 @code {
+    List<FantasyLeagueModel> allLeagues = new();
+    FantasyLeagueModel selectedLeague = new();
+    List<FantasyTeamModel> allUsersTeams = new();
+    string leagueNameInput = "";
+    bool leagueRequiresPassword = false;
+    string leaguePasswordInput = "";
+    bool showTeamsList = false;
 
+
+    protected async void OnInitilized()
+    {
+        allLeagues = await leagueData.GetAllLeagues();
+    }
+
+    private void CheckLeagueExists()
+    {
+        foreach(FantasyLeagueModel l in allLeagues)
+        {
+            //check the leaague exists
+            if(l.Name == leagueNameInput)
+            {
+                selectedLeague = l;
+
+                //check if it requires a password
+                if(l.RequirePassword == true)                
+                    leagueRequiresPassword = true;                
+            }
+        }
+    }
+
+    /// <summary>
+    /// Check passowrd matches
+    /// </summary>
+    private void CheckPassword()
+    {
+        if (selectedLeague.Password == leaguePasswordInput)
+            showTeamsList = true;
+        else
+        {
+            //display error message
+        }
+    }
+
+    /// <summary>
+    /// get a list of the users teams to select which to join the league
+    /// </summary>
+    private async void GetUsersTeams()
+    {
+        allUsersTeams = await teamData.GetTeamsByUserId(appState.currentUser.UserId);
+
+        //remove any team that are already part of a league
+        allUsersTeams = allUsersTeams.Where(t => t.LeagueId != "").ToList();
+    }
+
+    /// <summary>
+    /// Final stage
+    /// </summary>
+    private void JoinLeague()
+    {
+        //update team object with league id in the db
+
+        //take user back to fantasy home
+    }
 }
