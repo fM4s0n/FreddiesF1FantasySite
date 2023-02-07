@@ -25,7 +25,7 @@ public class FantasyTeamModel
 
     public List<DriverTeamMembershipModel> Drivers { get; set; } = new();
 
-    //Can get
+    //Need to store
     public string BoostedDriverId { get; set; } = string.Empty;
 
     //Need to store

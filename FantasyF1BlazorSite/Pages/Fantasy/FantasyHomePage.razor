@@ -11,6 +11,8 @@
 @inject AppStateService appState
 @inject ILeagueData leagueData
 @inject ITeamData teamData
+@inject IDriverTeamMembershipData dtmData
+@inject IConstructorTeamMembershipData ctmData
 
 <h2 style="text-align:center">Fantasy Home</h2>
 
@@ -83,20 +85,29 @@
                         <a href="/Fantasy/ManageTeam/TeamId=(@team.TeamId)" style="flex-grow:1"><i class="fa-solid fa-gear"></i></a>
                     </div>
 
-                    <table>
+                    <table class="table">
                         <thead>
                             <tr>
-                                <th>Driver name</th>
+                                <th>Driver</th>
                                 <th>Points</th>
-                                <th>Boosted?</th>
                                 <th>Current value</th>
                                 <th>Purchased value</th>
+                                <th> </th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach(var driver in team.Drivers)
                             {
+
                                 <tr>
+                                    <td>@driver.DriverName</td>
+                                    <td>@driver.PointsScored</td>
+                                    <td>£@(driver.CurrentValue)m</td>
+                                    <td>£@(driver.PurchasedValue)m</td>
+                                    @if(driver.DriverId == team.BoostedDriverId)
+                                    {
+                                        <td><i class="fa-sharp fa-solid fa-rocket-launch"></i></td>
+                                    }
 
                                 </tr>
                             }
@@ -152,5 +163,18 @@ else
             if (t.OwnerId != appState.currentUser.UserId)
                 teams.Remove(t);
         }
+    }
+
+    private async Task<FantasyTeamModel> GetTeamInfo(FantasyTeamModel team)
+    {
+        List<ConstructorTeamMembershipModel> allCTMs = await ctmData.GetAllConstructorTeamMemberships();
+        team.Constructors = allCTMs.Where(t => t.TeamId == team.TeamId).ToList();
+
+        List<DriverTeamMembershipModel> allDTMs = await dtmData.GetAllDriverTeamMemberships();
+        team.Drivers = allDTMs.Where(t => t.TeamId == team.TeamId && t.CurrentlySelected == true).ToList();
+
+        team.BoostedDriverId = team.Drivers.Where(t => t.)
+
+        return team;
     }
 }

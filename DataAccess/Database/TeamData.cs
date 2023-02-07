@@ -72,7 +72,7 @@ public class TeamData : ITeamData
     public Task InsertTeam(FantasyTeamModel team)
     {
         string sql = @"INSERT INTO dbo.tblTeam 
-                       VALUES (@TeamId, @Name, @OwnerId, @LeagueId, @BudgetRemaining, @CreatedDate, @TeamChangesCompleted);";
+                       VALUES (@TeamId, @Name, @OwnerId, @LeagueId, @BudgetRemaining, @CreatedDate, @TeamChangesCompleted, @BoostedDriverId);";
 
         return _db.SaveData(sql, team);
     }
