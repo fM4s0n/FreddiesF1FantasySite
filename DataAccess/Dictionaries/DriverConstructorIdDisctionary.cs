@@ -1,7 +1,7 @@
 ﻿
 namespace DataAccess.Dictionaries;
 
-public class DriverConstructorIdDisctionary
+public static class DriverConstructorIdDictionary
 {
     private static readonly Dictionary<string, string> DriverConstructorIds = new()
     {

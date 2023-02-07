@@ -21,7 +21,7 @@ public class DriverTeamMembershipData : IDriverTeamMembershipData
     public Task InsertDriverTeamMembership(DriverTeamMembershipModel dtm)
     {
         string sql = @"INSERT INTO dbo.tblDriverTeamMembership 
-                       VALUES(@DriverTeamMembershipId, @TeamId, @DriverId, @CurrentlySelected, @PointsScored, @PurchasedValue)";
+                       VALUES(@DriverTeamMembershipId, @TeamId, @DriverId, @CurrentlySelected, @PointsScored, @PurchasedValue, @BoostsRemaining, @CurrentlyBoosted)";
 
         return _db.SaveData(sql, dtm);
     }
@@ -30,7 +30,7 @@ public class DriverTeamMembershipData : IDriverTeamMembershipData
     {
         string sql = @"UPDATE dbo.tblDriverTeamMembership SET DriverTeamMembershipId = @DriverTeamMembershipId, 
                        TeamId = @TeamId, DriverId = @DriverId, CurrentlySelected = @CurrentlySelected,
-                       PointsScored = @PointsScored, PurchasedValue = @PurchasedValue";
+                       PointsScored = @PointsScored, PurchasedValue = @PurchasedValue, BoostsRemaining = @BoostsRemaining";
 
         return _db.SaveData(sql, dtm);
     }

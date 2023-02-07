@@ -30,7 +30,7 @@
                     <div class="fantasy-league-home-control" style="flex:auto">
                         <div class="fantasy-home-control-head">
                             <h4 style="flex-grow:20">@league.Name</h4>
-                            <a href="/Fantasy/ManageLeague/LeagueId=(@league.LeagueId)" style="flex-grow:1"><i class="fa-solid fa-gear"></i></a>
+                            <a href="/Fantasy/ManageLeague/LeagueId=(@league.LeagueId)" style="flex-grow:1"><i class="fa-solid fa-gear icon-colour"></i></a>
                         </div>
 
                         @if(league.Teams is not null)
@@ -75,14 +75,14 @@
 
         <h2>My Teams</h2>
         <a href="/Fantasy/CreateTeam">Create a new Team</a>
-        @if (teams is not null)
+        @if (ownedTeams is not null)
         {
-            @foreach (FantasyTeamModel team in teams)
+            @foreach (FantasyTeamModel team in ownedTeams)
             {
                 <div class="fantasy-team-home-control">
                     <div class="fantasy-home-control-head">
                         <h4 style="flex-grow:20">@team.Name</h4>
-                        <a href="/Fantasy/ManageTeam/TeamId=(@team.TeamId)" style="flex-grow:1"><i class="fa-solid fa-gear"></i></a>
+                        <a href="/Fantasy/ManageTeam/TeamId=(@team.TeamId)" style="flex-grow:1"><i class="fa-solid fa-gear icon-colour"></i></a>
                     </div>
 
                     <table class="table">
@@ -92,13 +92,12 @@
                                 <th>Points</th>
                                 <th>Current value</th>
                                 <th>Purchased value</th>
-                                <th> </th>
+                                <th>Boosted?</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach(var driver in team.Drivers)
                             {
-
                                 <tr>
                                     <td>@driver.DriverName</td>
                                     <td>@driver.PointsScored</td>
@@ -106,19 +105,17 @@
                                     <td>£@(driver.PurchasedValue)m</td>
                                     @if(driver.DriverId == team.BoostedDriverId)
                                     {
-                                        <td><i class="fa-sharp fa-solid fa-rocket-launch"></i></td>
+                                        <td><a><i class="fa-solid fa-rocket icon-colour"></i>
+
+                                        </a>
+
+                                        </td>
                                     }
 
                                 </tr>
                             }
                         </tbody>
                     </table>
-
-                    <img class="img" src="" />
-                    <img class="img" src="" />
-                    <img class="img" src="" />
-                    <img class="img" src="" />
-                    <img class="img" src="" />
                 </div>
             }
         }
@@ -130,17 +127,15 @@ else
 }
 
 
-
-
 @code {
-    List<FantasyTeamModel> teams = new();
+    List<FantasyTeamModel> ownedTeams = new();
     List<FantasyLeagueModel> leagues = new();
 
     protected override async Task OnInitializedAsync()
     {
         await GetOwnedLeagues();
 
-        await GetTeams();
+        await GetOwnedTeams();
     }
 
     private async Task GetOwnedLeagues()
@@ -154,27 +149,34 @@ else
         }
     }
 
-    private async Task GetTeams()
+    private async Task GetOwnedTeams()
     {
         //Get all teams a user owns
-        teams = await teamData.GetAllTeams();
-        foreach (var t in teams)
+        ownedTeams = await teamData.GetAllTeams();
+        foreach (var t in ownedTeams)
         {
             if (t.OwnerId != appState.currentUser.UserId)
-                teams.Remove(t);
+                ownedTeams.Remove(t);
         }
+
+
+        foreach(var team in ownedTeams)
+        {
+            team.Constructors = await GetTeamConstructorList(team);
+            team.Drivers = await GetTeamDriverList(team);
+        }
+
     }
 
-    private async Task<FantasyTeamModel> GetTeamInfo(FantasyTeamModel team)
+    private async Task<List<ConstructorTeamMembershipModel>> GetTeamConstructorList(FantasyTeamModel team)
     {
         List<ConstructorTeamMembershipModel> allCTMs = await ctmData.GetAllConstructorTeamMemberships();
-        team.Constructors = allCTMs.Where(t => t.TeamId == team.TeamId).ToList();
+        return allCTMs.Where(t => t.TeamId == team.TeamId).ToList();
+    }
 
+    private async Task<List<DriverTeamMembershipModel>> GetTeamDriverList(FantasyTeamModel team)
+    {
         List<DriverTeamMembershipModel> allDTMs = await dtmData.GetAllDriverTeamMemberships();
-        team.Drivers = allDTMs.Where(t => t.TeamId == team.TeamId && t.CurrentlySelected == true).ToList();
-
-        team.BoostedDriverId = team.Drivers.Where(t => t.)
-
-        return team;
+        return allDTMs.Where(t => t.TeamId == team.TeamId && t.CurrentlySelected == true).ToList();
     }
 }

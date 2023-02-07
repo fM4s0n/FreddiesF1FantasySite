@@ -328,6 +328,11 @@
             dtm.TeamId = newTeam.TeamId;
             dtm.CurrentlySelected = true;
             dtm.PurchasedValue = dtm.CurrentValue;
+            if (dtm.DriverId == newTeam.BoostedDriverId)
+                dtm.CurrentlyBoosted = true;
+            else
+                dtm.CurrentlyBoosted = false;
+            
             await dtmData.InsertDriverTeamMembership(dtm);
         }
 

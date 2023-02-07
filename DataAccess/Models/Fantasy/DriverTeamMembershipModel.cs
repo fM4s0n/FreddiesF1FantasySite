@@ -22,7 +22,7 @@ public class DriverTeamMembershipModel
     public string DriverName { get { return DriverNameDictionary.GetDriverName(DriverId); } }
 
     //Which constructor the driver is currently driving for
-    public string ConstructorId { get { return DriverConstructorIdDisctionary.GetDriversConstructorId(DriverId); } }
+    public string ConstructorId { get { return DriverConstructorIdDictionary.GetDriversConstructorId(DriverId); } }
 
     //Are they currenty on the team
     public bool CurrentlySelected { get; set; }
@@ -37,5 +37,8 @@ public class DriverTeamMembershipModel
     public double CurrentValue { get { return DriverValueDictionary.GetDriverValue(DriverId); } }
 
     //2 boosts per driver per season
-    public int BoostsLeft { get; set; } = 2;
+    public int BoostsRemaining { get; set; } = 2;
+
+    //Is the driver currently boosted
+    public bool CurrentlyBoosted { get; set; } = false;
 }
