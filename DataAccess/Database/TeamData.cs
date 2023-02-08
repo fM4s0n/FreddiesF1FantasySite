@@ -84,7 +84,9 @@ public class TeamData : ITeamData
     /// <returns></returns>
     public Task UpdateTeamDetails(FantasyTeamModel team)
     {
-        string sql = @"UPDATE dbo.tblTeam SET Name = @team.Name,
+        string sql = @"UPDATE dbo.tblTeam SET 
+                       Name = @team.Name, OwenerId = @OwnerId, LeagueId = @LeagueId, BudgetRemaining = @BudgetRemaining,
+                       TeamChangedCompleted = @TeamChangesCompleted, BoostedDriverId = @BoostedDriverId
                        WHERE TeamId = @team.TeamId";
 
         return _db.SaveData(sql, team);

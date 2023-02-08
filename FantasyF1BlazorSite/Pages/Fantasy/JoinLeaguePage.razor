@@ -16,35 +16,36 @@
     <form id="join-league">
         <label>Enter league name</label>
         <input type="text" @bind="leagueNameInput" />
-        <button type="submit" @onclick="CheckLeagueExists">Next</button>
+        <button type="button" @onclick="CheckLeagueExists">Next</button>
         @if(leagueNotFound)
         {
             <p>League not found, please try again</p>
         }
         <br /><br />
 
+
         @if(leagueRequiresPassword)
         {
             <label>Enter league password</label>
             <input type="text" @bind="leaguePasswordInput">
-            <button type="submit" @onclick="CheckPassword">Next</button>
-            <br /><br />
+            <button type="button" @onclick="CheckPassword">Next</button>
+            <br />
+
+            <br />
         }
-        else
-        {}
-        
+
         @if(showTeamsList == true)
         {
             <label>Select which team you want to join this league</label>
 
-            <select>
+            <select @bind="@selectedTeamId">
                 @foreach(FantasyTeamModel team in allUsersTeams)
                 {
                     <option value="@team.TeamId">@team.Name</option>
                 }
             </select>
 
-            <button type="submit">Join league</button>
+            <button type="submit" @onclick="JoinLeague">Join league</button>
         }
     </form>
 }
@@ -54,23 +55,22 @@
 @code {
     List<FantasyLeagueModel> allLeagues = new();
     FantasyLeagueModel selectedLeague = new();
+
     List<FantasyTeamModel> allUsersTeams = new();
+    string selectedTeamId = string.Empty;
+
     string leagueNameInput = "";
+
     bool leagueRequiresPassword = false;
     string leaguePasswordInput = "";
     bool showTeamsList = false;
     bool leagueNotFound = false;
 
-    bool shouldRender = true;
 
     protected override async Task OnInitializedAsync()
     {
         allLeagues = await leagueData.GetAllLeagues();
-    }
-
-    protected override bool ShouldRender()
-    {
-        return shouldRender;
+        GetUsersTeams();
     }
 
     private void CheckLeagueExists()
@@ -86,7 +86,6 @@
                 if(league.RequirePassword == true)
                 {
                     leagueRequiresPassword = true;
-                    shouldRender = false;
                 }
 
                 else                
@@ -115,10 +114,10 @@
     /// </summary>
     private async void GetUsersTeams()
     {
-        allUsersTeams = await teamData.GetTeamsByUserId(appState.currentUser.UserId);
+        allUsersTeams = await teamData.GetAllTeams();
 
         //remove any team that are already part of a league
-        allUsersTeams = allUsersTeams.Where(t => t.LeagueId != "").ToList();
+        allUsersTeams = allUsersTeams.Where(t => t.OwnerId == appState.currentUser.UserId && t.LeagueId == "").ToList();
     }
 
     /// <summary>
@@ -126,7 +125,12 @@
     /// </summary>
     private void JoinLeague()
     {
+        FantasyTeamModel selectedTeam = allUsersTeams.Where(t => t.TeamId == selectedTeamId).FirstOrDefault();
+
         //update team object with league id in the db
+        selectedTeam.LeagueId = selectedLeague.LeagueId;
+
+        teamData.UpdateTeamDetails(selectedTeam);
 
         //take user back to fantasy home
     }
