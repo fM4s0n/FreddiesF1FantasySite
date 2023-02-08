@@ -208,7 +208,7 @@
     /// <param name="args">value of the select item that has been changed</param>
     /// <param name="selectNumber">select item changed by the user</param>
     /// <returns></returns>
-    private async Task HandleSelectChanged(ChangeEventArgs args, int selectNumber)
+    private void HandleSelectChanged(ChangeEventArgs args, int selectNumber)
     {
         if(args.Value is not null)
         {

@@ -55,8 +55,8 @@
 </form>
 
 @code {
-    DriverStandingsModel.Root drivers;
-    ConstructorStandingsModel.Root constructors;
+    DriverStandingsModel.Root drivers = new();
+    ConstructorStandingsModel.Root constructors = new();
     UserModel user = new();
     bool usernameTaken = false;
 

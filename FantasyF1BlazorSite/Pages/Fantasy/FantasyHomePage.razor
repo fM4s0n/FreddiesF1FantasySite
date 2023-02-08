@@ -120,6 +120,9 @@
                             }
                         </tbody>
                     </table>
+                    <p>Total points: @team.TotalPoints</p>
+                    <p>Budget Remaining: @(team.BudgetRemaining.ToString("F"))m</p>
+                    <p>Team value: @(team.CurrentTeamValue.ToString("F"))m</p>
                 </div>
             }
         }
@@ -138,10 +141,13 @@ else
     protected override async Task OnInitializedAsync()
     {
         await GetOwnedLeagues();
-
         await GetOwnedTeams();
     }
 
+    /// <summary>
+    /// Get all leagues owned by a user
+    /// </summary>
+    /// <returns></returns>
     private async Task GetOwnedLeagues()
     {
         //get all leagues a user Owns
@@ -153,6 +159,9 @@ else
         }
     }
 
+    /// <summary>
+    /// get all teams a user owns
+    /// </summary>
     private async Task GetOwnedTeams()
     {
         //Get all teams a user owns
@@ -172,12 +181,24 @@ else
 
     }
 
+    /// <summary>
+    /// Get list of constructors associated only with this team
+    /// </summary>
+    /// <param name="team"></param>
+    /// <returns>List of constructors only assocaited with this team</returns>
     private async Task<List<ConstructorTeamMembershipModel>> GetTeamConstructorList(FantasyTeamModel team)
     {
         List<ConstructorTeamMembershipModel> allCTMs = await ctmData.GetAllConstructorTeamMemberships();
+
+
         return allCTMs.Where(t => t.TeamId == team.TeamId).ToList();
     }
 
+    /// <summary>
+    /// Get list of drivers associated only with this team
+    /// </summary>
+    /// <param name="team"></param>
+    /// <returns>List of drievrs only assocaited with this team</returns>
     private async Task<List<DriverTeamMembershipModel>> GetTeamDriverList(FantasyTeamModel team)
     {
         List<DriverTeamMembershipModel> allDTMs = await dtmData.GetAllDriverTeamMemberships();
