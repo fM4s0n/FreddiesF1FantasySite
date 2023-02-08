@@ -120,6 +120,30 @@
                             }
                         </tbody>
                     </table>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Constructor</th>
+                                <th>Points</th>
+                                <th>Current value</th>
+                                <th>Purchased value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var constructor in team.Constructors)
+                            {
+                                <tr>
+                                    <td>@constructor.ConstructorName</td>
+                                    <td>@constructor.PointsScored</td>
+                                    <td>£@(constructor.CurrentValue.ToString("F"))m</td>
+                                    <td>£@(constructor.PurchasedValue.ToString("F"))m</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+
                     <p>Total points: @team.TotalPoints</p>
                     <p>Budget Remaining: @(team.BudgetRemaining.ToString("F"))m</p>
                     <p>Team value: @(team.CurrentTeamValue.ToString("F"))m</p>
