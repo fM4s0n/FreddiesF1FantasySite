@@ -43,40 +43,40 @@
 
             <label for="selectDriver1">Select Driver 1</label>
             <select id="selectDriver1" @onchange="@((args) => HandleSelectChanged(args, 1))">
-                <option disabled value="0" selected="@(newTeam.Drivers[0].DriverId == "0")">-----------------------------------</option>
+                <option disabled value="0" selected="@(_selectedTeam.Drivers[0].DriverId == "0")">-----------------------------------</option>
                 @foreach(var d in availableDrivers1)
                 {
-                    <option value="@d.DriverId" selected="@(newTeam.Drivers[0].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
+                    <option value="@d.DriverId" selected="@(_selectedTeam.Drivers[0].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
                 }
             </select>
             <br />
 
             <label for="selectDriver2">Select Driver 2</label>
             <select id="selectDriver2" @onchange="@((args) => HandleSelectChanged(args, 2))">
-                <option disabled value="0" selected="@(newTeam.Drivers[1].DriverId == "0")">-----------------------------------</option>
+                <option disabled value="0" selected="@(_selectedTeam.Drivers[1].DriverId == "0")">-----------------------------------</option>
                 @foreach(var d in availableDrivers2)
                 {
-                    <option value="@d.DriverId" selected="@(newTeam.Drivers[1].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
+                    <option value="@d.DriverId" selected="@(_selectedTeam.Drivers[1].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
                 }
             </select>
             <br />
 
             <label for="selectDriver3">Select Driver 3</label>
             <select id="selectDriver3" @onchange="@((args) => HandleSelectChanged(args, 3))">
-                <option disabled value="0" selected="@(newTeam.Drivers[2].DriverId == "0")">-----------------------------------</option>
+                <option disabled value="0" selected="@(_selectedTeam.Drivers[2].DriverId == "0")">-----------------------------------</option>
                 @foreach(var d in availableDrivers3)
                 {
-                    <option value="@d.DriverId" selected="@(newTeam.Drivers[2].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
+                    <option value="@d.DriverId" selected="@(_selectedTeam.Drivers[2].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
                 }
             </select>
             <br />
 
             <label for="selectDriver3">Select Driver 4</label>
             <select id="selectDriver3" @onchange="@((args) => HandleSelectChanged(args, 4))">
-                <option disabled value="0" selected="@(newTeam.Drivers[3].DriverId == "0")">-----------------------------------</option>
+                <option disabled value="0" selected="@(_selectedTeam.Drivers[3].DriverId == "0")">-----------------------------------</option>
                 @foreach(var d in availableDrivers4)
                 {
-                    <option value="@d.DriverId" selected="@(newTeam.Drivers[3].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
+                    <option value="@d.DriverId" selected="@(_selectedTeam.Drivers[3].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
                 }
             </select>
             <br />
@@ -86,7 +86,7 @@
                 <option disabled value="0" selected="@(newTeam.BoostedDriverId == "")">-----------------------------------</option>
                 @foreach(var d in availableDriversToBoost)
                 {
-                    <option value="@d.DriverId" selected="@(newTeam.BoostedDriverId == d.DriverId)">@d.DriverName</option>
+                    <option value="@d.DriverId" selected="@(_selectedTeam.BoostedDriverId == d.DriverId)">@d.DriverName</option>
                 }
             </select>
             <br /> <br />
@@ -107,8 +107,8 @@
         </div>
 
         <div>
-            <p class="@SetBudgetTextColourClass">Team Value: £@(newTeam.CurrentTeamValue.ToString("F"))m</p>
-            <p>Budget remaining: £@(newTeam.BudgetRemaining.ToString("F"))m</p> <br />
+            <p class="@SetBudgetTextColourClass">Team Value: £@(_selectedTeam.CurrentTeamValue.ToString("F"))m</p>
+            <p>Budget remaining: £@(_selectedTeam.BudgetRemaining.ToString("F"))m</p> <br />
 
             <button type="submit" disabled="@(!allChecksPass)" @onclick="OnSubmit">Create Team</button>
         </div>
@@ -126,21 +126,24 @@ else
 @code {
     //Get teamid of the team being managed
     [Parameter]
-    public string passedTeamId { get; set; } = string.Empty;
+    public string _passedTeamId { get; set; } = string.Empty;
+
+    private string ColourCode { get; set; } = "";
+    bool allChecksPass = false;
 
     FantasyTeamModel? _selectedTeam = null;
 
-    //List of constructors for user to select for their team - get from api
-    List<ConstructorStandingsModel.Constructor> constructors = new();
-    List<DriverStandingsModel.Driver> drivers = new();
-
-    List<ConstructorTeamMembershipModel> CTMs = new();
-    List<DriverTeamMembershipModel> DTMs = new();
+    //lists of drivers and constructors to choose from
+    List<ConstructorTeamMembershipModel> availableConstructrors = new();
+    List<DriverTeamMembershipModel> availableDrivers1 = new();
+    List<DriverTeamMembershipModel> availableDrivers2 = new();
+    List<DriverTeamMembershipModel> availableDrivers3 = new();
+    List<DriverTeamMembershipModel> availableDrivers4 = new();
 
     protected override async Task OnInitializedAsync()
     {
         List<FantasyTeamModel> teams = await teamData.GetAllTeams();
-        teams = teams.Where(t => t.TeamId == passedTeamId).ToList();
+        teams = teams.Where(t => t.TeamId == _passedTeamId).ToList();
         _selectedTeam = teams[0];
 
         //fill out calculated properties of the team
@@ -157,10 +160,14 @@ else
     {
         var json = await ApiService.GetConstructorStandingsAsync(DateTime.Now.Year.ToString());
         ConstructorStandingsModel.Root deserialised = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(json);
-        @foreach(ConstructorStandingsModel.ConstructorStanding c in deserialised.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
+        foreach(ConstructorStandingsModel.ConstructorStanding c in deserialised.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
         {
-            constructors.Add(c.Constructor);
+            ConstructorTeamMembershipModel con = new();
+            con.ConstructorId = c.Constructor.ConstructorId;
+
+            availableConstructrors.Add(con);
         }
+        availableConstructrors = availableConstructrors.OrderByDescending(t => t.CurrentValue).ToList();
     }
 
     /// <summary>
@@ -170,10 +177,21 @@ else
     {
         var json = await ApiService.GetDriverStandingsAsync(DateTime.Now.Year.ToString());
         DriverStandingsModel.Root deserialised = JsonConvert.DeserializeObject<DriverStandingsModel.Root>(json);
-        @foreach(DriverStandingsModel.DriverStandings d in deserialised.MRData.StandingsTable.StandingsLists[0].DriverStandings)
+        foreach(DriverStandingsModel.DriverStandings d in deserialised.MRData.StandingsTable.StandingsLists[0].DriverStandings)
         {
-            drivers.Add(d.Driver);
+            DriverTeamMembershipModel dri = new();
+            dri.DriverId = d.Driver.DriverId;
+
+            availableDrivers1.Add(dri);
+            availableDrivers2.Add(dri);
+            availableDrivers3.Add(dri);
+            availableDrivers4.Add(dri);           
         }
+        //order lists by driver value
+        availableDrivers1 = availableDrivers1.OrderByDescending(t => t.CurrentValue).ToList();
+        availableDrivers2 = availableDrivers2.OrderByDescending(t => t.CurrentValue).ToList();
+        availableDrivers3 = availableDrivers3.OrderByDescending(t => t.CurrentValue).ToList();
+        availableDrivers4 = availableDrivers4.OrderByDescending(t => t.CurrentValue).ToList();
     }
 
 
@@ -186,41 +204,130 @@ else
         _selectedTeam.Drivers = DTMs.Count > 0 ? DTMs : null;
         _selectedTeam.Constructors = CTMs.Count > 0 ? CTMs : null;
 
-        //calculate total team value
-        //if(team.Drivers != null)
-        //{
-        //    foreach (var driver in team.Drivers)            
-        //        team.CurrentTeamValue += driver.CurrentValue;
-        //}
+
     }
 
     /// <summary>
-    /// get the drivers which are part of the team
+    /// When on changed is invoked, set the selected driver and refresh the lists
     /// </summary>
-    private async void GetTeamDrivers()
+    /// <param name="args">value of the select item that has been changed</param>
+    /// <param name="selectNumber">select item changed by the user</param>
+    /// <returns></returns>
+    private void HandleSelectChanged(ChangeEventArgs args, int selectNumber)
     {
-        //get all dtms from the db
-        DTMs = await dtmData.GetAllDriverTeamMemberships();
-
-        //remove any from the list that aren't from tor team
-        foreach(DriverTeamMembershipModel dtm in DTMs)
+        if(args.Value is not null)
         {
-            if(dtm.TeamId != _selectedTeam.TeamId)
-                DTMs.Remove(dtm);
+            //if constructor select box selected
+            if(selectNumber == 0)
+                _selectedTeam.Constructors[0].ConstructorId = args.Value.ToString();
+            else if(selectNumber > 0 && selectNumber < 5)
+            {   //depending on the select box chosen, remove the selected driver from each of the other boxes so they can't be selected again
+                if(selectNumber == 1)
+                {
+                    //if a driver is already in the slot we are about to put one in, we need to add that driveer back into the other lists
+                    if(_selectedTeam.Drivers[0].DriverId != "0")
+                    {
+                        availableDrivers2.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[0].DriverId });
+                        availableDrivers3.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[0].DriverId });
+                        availableDrivers4.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[0].DriverId });
+                    }
+
+                    //remove from all lists except the one the driver has just been selected in
+                    availableDrivers2.RemoveAll(s => s.DriverId == args.Value.ToString());
+                    availableDrivers3.RemoveAll(s => s.DriverId == args.Value.ToString());
+                    availableDrivers4.RemoveAll(s => s.DriverId == args.Value.ToString());
+                }
+
+                if(selectNumber == 2)
+                {
+                    if(_selectedTeam.Drivers[1].DriverId != "0")
+                    {
+                        availableDrivers1.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[1].DriverId });
+                        availableDrivers3.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[1].DriverId });
+                        availableDrivers4.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[1].DriverId });
+                    }
+
+                    availableDrivers1.RemoveAll(s => s.DriverId == args.Value.ToString());
+                    availableDrivers3.RemoveAll(s => s.DriverId == args.Value.ToString());
+                    availableDrivers4.RemoveAll(s => s.DriverId == args.Value.ToString());
+                }
+
+                if(selectNumber == 3)
+                {
+                    if(_selectedTeam.Drivers[2].DriverId != "0")
+                    {
+                        availableDrivers1.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[2].DriverId });
+                        availableDrivers2.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[2].DriverId });
+                        availableDrivers4.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[2].DriverId });
+                    }
+
+                    availableDrivers1.RemoveAll(s => s.DriverId == args.Value.ToString());
+                    availableDrivers2.RemoveAll(s => s.DriverId == args.Value.ToString());
+                    availableDrivers4.RemoveAll(s => s.DriverId == args.Value.ToString());
+                }
+
+                if(selectNumber == 4)
+                {
+                    if(_selectedTeam.Drivers[3].DriverId != "0")
+                    {
+                        availableDrivers1.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[3].DriverId });
+                        availableDrivers2.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[3].DriverId });
+                        availableDrivers3.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[3].DriverId });
+                    }
+
+                    availableDrivers1.RemoveAll(s => s.DriverId == args.Value.ToString());
+                    availableDrivers2.RemoveAll(s => s.DriverId == args.Value.ToString());
+                    availableDrivers3.RemoveAll(s => s.DriverId == args.Value.ToString());
+                }
+                //add the selected driver to the team in the relevent index
+                _selectedTeam.Drivers[selectNumber - 1].DriverId = args.Value.ToString();
+                //add the selected driver to the available drivers to boost
+                availableDriversToBoost[selectNumber - 1].DriverId = (args.Value.ToString());
+
+                //re order the lists by value
+                availableDrivers1 = availableDrivers1.OrderByDescending(t => t.CurrentValue).ToList();
+                availableDrivers2 = availableDrivers2.OrderByDescending(t => t.CurrentValue).ToList();
+                availableDrivers3 = availableDrivers3.OrderByDescending(t => t.CurrentValue).ToList();
+                availableDrivers4 = availableDrivers4.OrderByDescending(t => t.CurrentValue).ToList();
+            }
+            else
+            {
+                //if 5 is selected, they are updating their boosted driver
+                if(selectNumber == 5)
+                {
+                    _selectedTeam.BoostedDriverId = args.Value.ToString();
+                }
+            }
+            //calc budget remaining
+            _selectedTeam.BudgetRemaining = 100 - _selectedTeam.CurrentTeamValue;
+
+            CheckInputs();
         }
     }
 
-    /// <summary>
-    /// get a list of the constructors that are part of the team
-    /// </summary>
-    private async void GetTeamConstructors()
-    {      
-        CTMs = await ctmData.GetAllConstructorTeamMemberships();
-
-        foreach(ConstructorTeamMembershipModel ctm in CTMs)
+    private void CheckInputs()
+    {
+        if(_selectedTeam.Name != "" && _selectedTeam.CurrentTeamValue <= 100 && _selectedTeam.Constructors.All(t => t.ConstructorId != "0") && _selectedTeam.Drivers.All(t => t.DriverId != "0") && usersOwnedTeams.All(r => r.Name != _selectedTeam.Name))
         {
-            if(ctm.TeamId != _selectedTeam.TeamId)
-                CTMs.Remove(ctm);
+            allChecksPass = true;
+        }
+    }
+
+    private void SetBudgetTextColourClass()
+    {
+        if(_selectedTeam.CurrentTeamValue < 100)
+        {
+            ColourCode = "black-Text-Class";
+        }
+
+        if(_selectedTeam.CurrentTeamValue == 100)
+        {
+            ColourCode = "green-Text-Class";
+        }
+
+        if(_selectedTeam.CurrentTeamValue > 100)
+        {
+            ColourCode = "red-Text-Class";
         }
     }
 }
