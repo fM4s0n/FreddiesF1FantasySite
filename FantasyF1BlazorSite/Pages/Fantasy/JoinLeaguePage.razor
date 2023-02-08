@@ -19,7 +19,7 @@
         <button type="submit" @onclick="CheckLeagueExists">Next</button>
         @if(leagueNotFound)
         {
-            <p>league not found, please try again</p>
+            <p>League not found, please try again</p>
         }
         <br /><br />
 
@@ -30,7 +30,9 @@
             <button type="submit" @onclick="CheckPassword">Next</button>
             <br /><br />
         }
-
+        else
+        {}
+        
         @if(showTeamsList == true)
         {
             <label>Select which team you want to join this league</label>
@@ -44,7 +46,6 @@
 
             <button type="submit">Join league</button>
         }
-
     </form>
 }
 
@@ -60,23 +61,34 @@
     bool showTeamsList = false;
     bool leagueNotFound = false;
 
-    protected async void OnInitilized()
+    bool shouldRender = true;
+
+    protected override async Task OnInitializedAsync()
     {
         allLeagues = await leagueData.GetAllLeagues();
     }
 
+    protected override bool ShouldRender()
+    {
+        return shouldRender;
+    }
+
     private void CheckLeagueExists()
     {
-        foreach(FantasyLeagueModel l in allLeagues)
+        foreach(FantasyLeagueModel league in allLeagues)
         {
             //check the leaague exists
-            if(l.Name.ToLower() == leagueNameInput.ToLower())
+            if(league.Name.ToLower() == leagueNameInput.ToLower())
             {
-                selectedLeague = l;
+                selectedLeague = league;
 
                 //check if it requires a password
-                if(l.RequirePassword == true)                
+                if(league.RequirePassword == true)
+                {
                     leagueRequiresPassword = true;
+                    shouldRender = false;
+                }
+
                 else                
                     showTeamsList = true;                
             }
