@@ -8,6 +8,7 @@
 @inject AppStateService appState
 @inject ILeagueData leagueData
 @inject ITeamData teamData
+@inject NavigationManager navMan
 
 <h2>Join a league</h2>
 
@@ -121,7 +122,7 @@
     }
 
     /// <summary>
-    /// Final stage
+    /// Final stage - insert into db and give team a leagueId
     /// </summary>
     private void JoinLeague()
     {
@@ -133,5 +134,6 @@
         teamData.UpdateTeamDetails(selectedTeam);
 
         //take user back to fantasy home
+        navMan.NavigateTo("/Fantasy/Home");
     }
 }

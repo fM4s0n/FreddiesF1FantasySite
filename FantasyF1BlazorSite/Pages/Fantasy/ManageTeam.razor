@@ -10,91 +10,107 @@
 @using Newtonsoft.Json
 
 @inject ITeamData teamData
+@inject ILeagueData leagueData
 @inject IConstructorTeamMembershipData ctmData
 @inject IDriverTeamMembershipData dtmData
 @inject AppStateService appState
 @inject NavigationManager navMan
 
-@if(team is not null)
+<head>
+    <title>Manage My Team</title>
+</head>
+
+@if(_selectedTeam is not null)
 {
-    @if(team.OwnerId == appState.currentUser.UserId)
+    @if(_selectedTeam.OwnerId == appState.currentUser.UserId)
     {
-        <h2 style="text-align:center">Manage Team</h2>
+        <h2 style="text-align:center">Manage My Team</h2>
         
         <div>
             <label>Team name</label>
-            <input type="text" @bind=team.Name/>
+            <input type="text" @bind=_selectedTeam.Name/>
             <br/><br />
 
+            <label for="selectConstructor">Select Constructor</label>
+            <select id="selectConstructor" @onchange="@((args) => HandleSelectChanged(args, 0))">
+                <option disabled selected value="0">-----------------------------------</option>
+                @foreach(var c in availableConstructrors)
+                {
+                    <option value="@c.ConstructorId">@(c.ConstructorName) - £@(c.CurrentValue.ToString("F"))m </option>
+                }
+            </select>
+            <br/>
+
+            <label for="selectDriver1">Select Driver 1</label>
+            <select id="selectDriver1" @onchange="@((args) => HandleSelectChanged(args, 1))">
+                <option disabled value="0" selected="@(newTeam.Drivers[0].DriverId == "0")">-----------------------------------</option>
+                @foreach(var d in availableDrivers1)
+                {
+                    <option value="@d.DriverId" selected="@(newTeam.Drivers[0].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
+                }
+            </select>
+            <br />
+
+            <label for="selectDriver2">Select Driver 2</label>
+            <select id="selectDriver2" @onchange="@((args) => HandleSelectChanged(args, 2))">
+                <option disabled value="0" selected="@(newTeam.Drivers[1].DriverId == "0")">-----------------------------------</option>
+                @foreach(var d in availableDrivers2)
+                {
+                    <option value="@d.DriverId" selected="@(newTeam.Drivers[1].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
+                }
+            </select>
+            <br />
+
+            <label for="selectDriver3">Select Driver 3</label>
+            <select id="selectDriver3" @onchange="@((args) => HandleSelectChanged(args, 3))">
+                <option disabled value="0" selected="@(newTeam.Drivers[2].DriverId == "0")">-----------------------------------</option>
+                @foreach(var d in availableDrivers3)
+                {
+                    <option value="@d.DriverId" selected="@(newTeam.Drivers[2].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
+                }
+            </select>
+            <br />
+
+            <label for="selectDriver3">Select Driver 4</label>
+            <select id="selectDriver3" @onchange="@((args) => HandleSelectChanged(args, 4))">
+                <option disabled value="0" selected="@(newTeam.Drivers[3].DriverId == "0")">-----------------------------------</option>
+                @foreach(var d in availableDrivers4)
+                {
+                    <option value="@d.DriverId" selected="@(newTeam.Drivers[3].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
+                }
+            </select>
+            <br />
+
+            <label for="selectDriverBoost">Select Driver to boost</label>
+            <select id="selectDriverBoost" @onchange="@((args) => HandleSelectChanged(args, 5))">
+                <option disabled value="0" selected="@(newTeam.BoostedDriverId == "")">-----------------------------------</option>
+                @foreach(var d in availableDriversToBoost)
+                {
+                    <option value="@d.DriverId" selected="@(newTeam.BoostedDriverId == d.DriverId)">@d.DriverName</option>
+                }
+            </select>
+            <br /> <br />
+
+            
+
+        </div>
+
+        <div>
             <label>Current Team Value</label>
-            <p>@team.CurrentTeamValue</p>
+            <p>@_selectedTeam.CurrentTeamValue</p>
 
             <label>Purchased Team Value</label>
-            <p>@team.PurchasedTeamValue</p>
+            <p>@_selectedTeam.PurchasedTeamValue</p>
 
             <label>Team budget remaining</label>
-            <p>@team.BudgetRemaining</p>
+            <p>@_selectedTeam.BudgetRemaining</p>
+        </div>
 
-            <label>Constructor</label>
-            @if(team.Constructors.Count > 1)
-            {
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Constructor</th>
-                            <th>Points scored</th>
-                            <th>Current Value</th>
-                            <th>Purchased Value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach(ConstructorTeamMembershipModel ctm in team.Constructors)
-                        {
-                            <tr>
-                                <td>@ctm.ConstructorName</td>
-                                <td>@ctm.PointsScored</td>
-                                <td>£@(ctm.CurrentValue)m</td>
-                                <td>£@(ctm.PurchasedValue)m</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
+        <div>
+            <p class="@SetBudgetTextColourClass">Team Value: £@(newTeam.CurrentTeamValue.ToString("F"))m</p>
+            <p>Budget remaining: £@(newTeam.BudgetRemaining.ToString("F"))m</p> <br />
 
-
-            @*<select>
-                @foreach(var constructor in constructors)
-                {
-                    <option value="@constructor.ConstructorId" selected="@(constructor.ConstructorId == team.Constructors[0].ConstructorId)">@constructor.Name - @ConstructorValueDictionary.GetCurrentValue(constructor.ConstructorId)m</option>
-                }
-            </select>*@
-
-            <label>Drivers</label>
-            @if(team.Drivers.Count > 1)
-            {
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Constructor</th>
-                            <th>Points scored</th>
-                            <th>Current Value</th>
-                            <th>Purchased Value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach(DriverTeamMembershipModel dtm in team.Drivers)
-                        {
-                            <tr>
-                                <td>@dtm.DriverName</td>
-                                <td>@dtm.PointsScored</td>
-                                <td>£@(dtm.CurrentValue)m</td>
-                                <td>£@(dtm.PurchasedValue)m</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-
+            <button type="submit" disabled="@(!allChecksPass)" @onclick="OnSubmit">Create Team</button>
         </div>
     }
     else
@@ -112,7 +128,7 @@ else
     [Parameter]
     public string passedTeamId { get; set; } = string.Empty;
 
-    FantasyTeamModel team = new();
+    FantasyTeamModel? _selectedTeam = null;
 
     //List of constructors for user to select for their team - get from api
     List<ConstructorStandingsModel.Constructor> constructors = new();
@@ -123,8 +139,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        List<FantasyTeamModel> teams = await teamData.GetTeamsByLeagueId(passedTeamId);
-        team = teams[0];
+        List<FantasyTeamModel> teams = await teamData.GetAllTeams();
+        teams = teams.Where(t => t.TeamId == passedTeamId).ToList();
+        _selectedTeam = teams[0];
 
         //fill out calculated properties of the team
         CompleteTeamInfo();
@@ -166,8 +183,8 @@ else
     private void CompleteTeamInfo()
     {
         //fill out the driver and constructor lists
-        team.Drivers = DTMs.Count > 0 ? DTMs : null;
-        team.Constructors = CTMs.Count > 0 ? CTMs : null;
+        _selectedTeam.Drivers = DTMs.Count > 0 ? DTMs : null;
+        _selectedTeam.Constructors = CTMs.Count > 0 ? CTMs : null;
 
         //calculate total team value
         //if(team.Drivers != null)
@@ -188,7 +205,7 @@ else
         //remove any from the list that aren't from tor team
         foreach(DriverTeamMembershipModel dtm in DTMs)
         {
-            if(dtm.TeamId != team.TeamId)
+            if(dtm.TeamId != _selectedTeam.TeamId)
                 DTMs.Remove(dtm);
         }
     }
@@ -202,7 +219,7 @@ else
 
         foreach(ConstructorTeamMembershipModel ctm in CTMs)
         {
-            if(ctm.TeamId != team.TeamId)
+            if(ctm.TeamId != _selectedTeam.TeamId)
                 CTMs.Remove(ctm);
         }
     }
