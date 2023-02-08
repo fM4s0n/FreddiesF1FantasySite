@@ -83,7 +83,7 @@
 
             <label for="selectDriverBoost">Select Driver to boost</label>
             <select id="selectDriverBoost" @onchange="@((args) => HandleSelectChanged(args, 5))">
-                <option disabled value="0" selected="@(newTeam.BoostedDriverId == "")">-----------------------------------</option>
+                <option disabled value="0" selected="@(_selectedTeam.BoostedDriverId == "")">-----------------------------------</option>
                 @foreach(var d in availableDriversToBoost)
                 {
                     <option value="@d.DriverId" selected="@(_selectedTeam.BoostedDriverId == d.DriverId)">@d.DriverName</option>
@@ -130,8 +130,11 @@ else
 
     private string ColourCode { get; set; } = "";
     bool allChecksPass = false;
+    bool setupDone;
 
     FantasyTeamModel? _selectedTeam = null;
+
+    List<FantasyTeamModel> usersOwnedTeams = new();
 
     //lists of drivers and constructors to choose from
     List<ConstructorTeamMembershipModel> availableConstructrors = new();
@@ -140,8 +143,19 @@ else
     List<DriverTeamMembershipModel> availableDrivers3 = new();
     List<DriverTeamMembershipModel> availableDrivers4 = new();
 
+    //List of drivers that are available to boost- i.e only ones selected in the team
+    List<DriverTeamMembershipModel> availableDriversToBoost = new();
+
     protected override async Task OnInitializedAsync()
     {
+        usersOwnedTeams = await teamData.GetAllTeams();
+
+        foreach(var t in usersOwnedTeams)
+        {
+            if(t.OwnerId != appState.currentUser.UserId)
+                usersOwnedTeams.Remove(t);
+        }
+
         List<FantasyTeamModel> teams = await teamData.GetAllTeams();
         teams = teams.Where(t => t.TeamId == _passedTeamId).ToList();
         _selectedTeam = teams[0];
@@ -151,7 +165,19 @@ else
 
         //fill out the constructors list from thr api
         GetListOfConstructors();
+
+        //add 4 empty drivers to the team so we can insert a driver
+        for(int i = 0; i < 4; i++)
+            _selectedTeam.Drivers.Add(new DriverTeamMembershipModel() { DriverId = "0" });
+
+        _selectedTeam.Constructors.Add(new ConstructorTeamMembershipModel());
+
+        for(int i = 0; i < 4; i++)
+            availableDriversToBoost.Add(new DriverTeamMembershipModel() { DriverId = "0" });
+
+        setupDone = true;
     }
+
 
     /// <summary>
     /// Get a list of constructors from the API that a user can choose from for their team
@@ -198,13 +224,17 @@ else
     /// <summary>
     /// Fill out the driver and constructor list properties of the team
     /// </summary>
-    private void CompleteTeamInfo()
+    private async void CompleteTeamInfo()
     {
-        //fill out the driver and constructor lists
-        _selectedTeam.Drivers = DTMs.Count > 0 ? DTMs : null;
-        _selectedTeam.Constructors = CTMs.Count > 0 ? CTMs : null;
+        if(_selectedTeam is not null)
+        {
+            //fill out the driver and constructor lists
+            List<ConstructorTeamMembershipModel> allCTMs = await ctmData.GetAllConstructorTeamMemberships();
+            _selectedTeam.Constructors = allCTMs.Where(c => c.TeamId == _selectedTeam.TeamId).ToList();
 
-
+            List<DriverTeamMembershipModel> allDTMs = await dtmData.GetAllDriverTeamMemberships();
+            _selectedTeam.Drivers = allDTMs.Where(d => d.TeamId == _selectedTeam.TeamId).OrderBy(t => t.CurrentValue).ToList();
+        }
     }
 
     /// <summary>
@@ -215,119 +245,136 @@ else
     /// <returns></returns>
     private void HandleSelectChanged(ChangeEventArgs args, int selectNumber)
     {
-        if(args.Value is not null)
+        if(_selectedTeam is not null)
         {
-            //if constructor select box selected
-            if(selectNumber == 0)
-                _selectedTeam.Constructors[0].ConstructorId = args.Value.ToString();
-            else if(selectNumber > 0 && selectNumber < 5)
-            {   //depending on the select box chosen, remove the selected driver from each of the other boxes so they can't be selected again
-                if(selectNumber == 1)
-                {
-                    //if a driver is already in the slot we are about to put one in, we need to add that driveer back into the other lists
-                    if(_selectedTeam.Drivers[0].DriverId != "0")
-                    {
-                        availableDrivers2.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[0].DriverId });
-                        availableDrivers3.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[0].DriverId });
-                        availableDrivers4.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[0].DriverId });
-                    }
-
-                    //remove from all lists except the one the driver has just been selected in
-                    availableDrivers2.RemoveAll(s => s.DriverId == args.Value.ToString());
-                    availableDrivers3.RemoveAll(s => s.DriverId == args.Value.ToString());
-                    availableDrivers4.RemoveAll(s => s.DriverId == args.Value.ToString());
-                }
-
-                if(selectNumber == 2)
-                {
-                    if(_selectedTeam.Drivers[1].DriverId != "0")
-                    {
-                        availableDrivers1.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[1].DriverId });
-                        availableDrivers3.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[1].DriverId });
-                        availableDrivers4.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[1].DriverId });
-                    }
-
-                    availableDrivers1.RemoveAll(s => s.DriverId == args.Value.ToString());
-                    availableDrivers3.RemoveAll(s => s.DriverId == args.Value.ToString());
-                    availableDrivers4.RemoveAll(s => s.DriverId == args.Value.ToString());
-                }
-
-                if(selectNumber == 3)
-                {
-                    if(_selectedTeam.Drivers[2].DriverId != "0")
-                    {
-                        availableDrivers1.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[2].DriverId });
-                        availableDrivers2.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[2].DriverId });
-                        availableDrivers4.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[2].DriverId });
-                    }
-
-                    availableDrivers1.RemoveAll(s => s.DriverId == args.Value.ToString());
-                    availableDrivers2.RemoveAll(s => s.DriverId == args.Value.ToString());
-                    availableDrivers4.RemoveAll(s => s.DriverId == args.Value.ToString());
-                }
-
-                if(selectNumber == 4)
-                {
-                    if(_selectedTeam.Drivers[3].DriverId != "0")
-                    {
-                        availableDrivers1.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[3].DriverId });
-                        availableDrivers2.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[3].DriverId });
-                        availableDrivers3.Add(new DriverTeamMembershipModel { DriverId = newTeam.Drivers[3].DriverId });
-                    }
-
-                    availableDrivers1.RemoveAll(s => s.DriverId == args.Value.ToString());
-                    availableDrivers2.RemoveAll(s => s.DriverId == args.Value.ToString());
-                    availableDrivers3.RemoveAll(s => s.DriverId == args.Value.ToString());
-                }
-                //add the selected driver to the team in the relevent index
-                _selectedTeam.Drivers[selectNumber - 1].DriverId = args.Value.ToString();
-                //add the selected driver to the available drivers to boost
-                availableDriversToBoost[selectNumber - 1].DriverId = (args.Value.ToString());
-
-                //re order the lists by value
-                availableDrivers1 = availableDrivers1.OrderByDescending(t => t.CurrentValue).ToList();
-                availableDrivers2 = availableDrivers2.OrderByDescending(t => t.CurrentValue).ToList();
-                availableDrivers3 = availableDrivers3.OrderByDescending(t => t.CurrentValue).ToList();
-                availableDrivers4 = availableDrivers4.OrderByDescending(t => t.CurrentValue).ToList();
-            }
-            else
+            if(args.Value is not null)
             {
-                //if 5 is selected, they are updating their boosted driver
-                if(selectNumber == 5)
-                {
-                    _selectedTeam.BoostedDriverId = args.Value.ToString();
-                }
-            }
-            //calc budget remaining
-            _selectedTeam.BudgetRemaining = 100 - _selectedTeam.CurrentTeamValue;
+                //if constructor select box selected
+                if(selectNumber == 0)
+                    _selectedTeam.Constructors[0].ConstructorId = args.Value.ToString();
+                else if(selectNumber > 0 && selectNumber < 5)
+                {   //depending on the select box chosen, remove the selected driver from each of the other boxes so they can't be selected again
+                    if(selectNumber == 1)
+                    {
+                        //if a driver is already in the slot we are about to put one in, we need to add that driveer back into the other lists
+                        if(_selectedTeam.Drivers[0].DriverId != "0")
+                        {
+                            availableDrivers2.Add(new DriverTeamMembershipModel { DriverId = _selectedTeam.Drivers[0].DriverId });
+                            availableDrivers3.Add(new DriverTeamMembershipModel { DriverId = _selectedTeam.Drivers[0].DriverId });
+                            availableDrivers4.Add(new DriverTeamMembershipModel { DriverId = _selectedTeam.Drivers[0].DriverId });
+                        }
 
-            CheckInputs();
+                        //remove from all lists except the one the driver has just been selected in
+                        availableDrivers2.RemoveAll(s => s.DriverId == args.Value.ToString());
+                        availableDrivers3.RemoveAll(s => s.DriverId == args.Value.ToString());
+                        availableDrivers4.RemoveAll(s => s.DriverId == args.Value.ToString());
+                    }
+
+                    if(selectNumber == 2)
+                    {
+                        if(_selectedTeam.Drivers[1].DriverId != "0")
+                        {
+                            availableDrivers1.Add(new DriverTeamMembershipModel { DriverId = _selectedTeam.Drivers[1].DriverId });
+                            availableDrivers3.Add(new DriverTeamMembershipModel { DriverId = _selectedTeam.Drivers[1].DriverId });
+                            availableDrivers4.Add(new DriverTeamMembershipModel { DriverId = _selectedTeam.Drivers[1].DriverId });
+                        }
+
+                        availableDrivers1.RemoveAll(s => s.DriverId == args.Value.ToString());
+                        availableDrivers3.RemoveAll(s => s.DriverId == args.Value.ToString());
+                        availableDrivers4.RemoveAll(s => s.DriverId == args.Value.ToString());
+                    }
+
+                    if(selectNumber == 3)
+                    {
+                        if(_selectedTeam.Drivers[2].DriverId != "0")
+                        {
+                            availableDrivers1.Add(new DriverTeamMembershipModel { DriverId = _selectedTeam.Drivers[2].DriverId });
+                            availableDrivers2.Add(new DriverTeamMembershipModel { DriverId = _selectedTeam.Drivers[2].DriverId });
+                            availableDrivers4.Add(new DriverTeamMembershipModel { DriverId = _selectedTeam.Drivers[2].DriverId });
+                        }
+
+                        availableDrivers1.RemoveAll(s => s.DriverId == args.Value.ToString());
+                        availableDrivers2.RemoveAll(s => s.DriverId == args.Value.ToString());
+                        availableDrivers4.RemoveAll(s => s.DriverId == args.Value.ToString());
+                    }
+
+                    if(selectNumber == 4)
+                    {
+                        if(_selectedTeam.Drivers[3].DriverId != "0")
+                        {
+                            availableDrivers1.Add(new DriverTeamMembershipModel { DriverId = _selectedTeam.Drivers[3].DriverId });
+                            availableDrivers2.Add(new DriverTeamMembershipModel { DriverId = _selectedTeam.Drivers[3].DriverId });
+                            availableDrivers3.Add(new DriverTeamMembershipModel { DriverId = _selectedTeam.Drivers[3].DriverId });
+                        }
+
+                        availableDrivers1.RemoveAll(s => s.DriverId == args.Value.ToString());
+                        availableDrivers2.RemoveAll(s => s.DriverId == args.Value.ToString());
+                        availableDrivers3.RemoveAll(s => s.DriverId == args.Value.ToString());
+                    }
+                    //add the selected driver to the team in the relevent index
+                    _selectedTeam.Drivers[selectNumber - 1].DriverId = args.Value.ToString();
+                    //add the selected driver to the available drivers to boost
+                    availableDriversToBoost[selectNumber - 1].DriverId = (args.Value.ToString());
+
+                    //re order the lists by value
+                    availableDrivers1 = availableDrivers1.OrderByDescending(t => t.CurrentValue).ToList();
+                    availableDrivers2 = availableDrivers2.OrderByDescending(t => t.CurrentValue).ToList();
+                    availableDrivers3 = availableDrivers3.OrderByDescending(t => t.CurrentValue).ToList();
+                    availableDrivers4 = availableDrivers4.OrderByDescending(t => t.CurrentValue).ToList();
+                }
+                else
+                {
+                    //if 5 is selected, they are updating their boosted driver
+                    if(selectNumber == 5)
+                    {
+                        _selectedTeam.BoostedDriverId = args.Value.ToString();
+                    }
+                }
+                //calc budget remaining
+                _selectedTeam.BudgetRemaining = 100 - _selectedTeam.CurrentTeamValue;
+
+                CheckInputs();
+            }
+        }
+    }
+
+    private async void OnSubmit()
+    {
+        if(_selectedTeam is not null)
+        {
+            await teamData.UpdateTeamDetails(_selectedTeam);
         }
     }
 
     private void CheckInputs()
     {
-        if(_selectedTeam.Name != "" && _selectedTeam.CurrentTeamValue <= 100 && _selectedTeam.Constructors.All(t => t.ConstructorId != "0") && _selectedTeam.Drivers.All(t => t.DriverId != "0") && usersOwnedTeams.All(r => r.Name != _selectedTeam.Name))
+        if(_selectedTeam is not null)
         {
-            allChecksPass = true;
+            if(_selectedTeam.Name != "" && _selectedTeam.CurrentTeamValue <= 100 && _selectedTeam.Constructors.All(t => t.ConstructorId != "0") && _selectedTeam.Drivers.All(t => t.DriverId != "0") && usersOwnedTeams.All(r => r.Name != _selectedTeam.Name))
+            {
+                allChecksPass = true;
+            }
         }
     }
 
     private void SetBudgetTextColourClass()
     {
-        if(_selectedTeam.CurrentTeamValue < 100)
+        if(_selectedTeam is not null)
         {
-            ColourCode = "black-Text-Class";
-        }
+            if(_selectedTeam.CurrentTeamValue < 100)
+            {
+                ColourCode = "black-Text-Class";
+            }
 
-        if(_selectedTeam.CurrentTeamValue == 100)
-        {
-            ColourCode = "green-Text-Class";
-        }
+            if(_selectedTeam.CurrentTeamValue == 100)
+            {
+                ColourCode = "green-Text-Class";
+            }
 
-        if(_selectedTeam.CurrentTeamValue > 100)
-        {
-            ColourCode = "red-Text-Class";
+            if(_selectedTeam.CurrentTeamValue > 100)
+            {
+                ColourCode = "red-Text-Class";
+            }
         }
     }
 }

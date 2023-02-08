@@ -23,7 +23,7 @@
 {
     <h3>Create a new Fantasy Team</h3>
 
-    if(setUpdone)
+    if(setupDone)
     {
         <p>Create a team by selecting 1 constructor and 4 drivers</p>
         <p>You have a budget of £100.00m</p>
@@ -129,7 +129,7 @@
     FantasyTeamModel newTeam = new();
     List<FantasyTeamModel> usersOwnedTeams = new();
     bool nameTaken = false;
-    bool setUpdone = false;
+    bool setupDone = false;
     bool allChecksPass = false;
 
     //lists of drivers and constructors to choose from
@@ -168,7 +168,7 @@
         for (int i = 0; i < 4; i++)
             availableDriversToBoost.Add(new DriverTeamMembershipModel() { DriverId = "0" });
 
-        setUpdone = true;
+        setupDone = true;
     }
 
     private async Task GetConstructors()
