@@ -186,20 +186,22 @@ a, .btn-link {
 
 .fantasy-team-home-control {
     background-color:lightblue;
-    max-width: 500px;
+    max-width: 600px;
     height: auto;
     border-radius: 15px;
     margin:15px;
     padding:15px;
+    text-align: center;
 }
 
 .fantasy-league-home-control {
     background-color: lightgreen;
-    max-width: 500px;
+    max-width: 600px;
     height: auto;
     border-radius: 15px;
     margin: 15px;
     padding: 15px;
+    text-align: center;
 }
 
 .create-league-input {

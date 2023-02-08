@@ -17,15 +17,19 @@
         <label>Enter league name</label>
         <input type="text" @bind="leagueNameInput" />
         <button type="submit" @onclick="CheckLeagueExists">Next</button>
+        @if(leagueNotFound)
+        {
+            <p>league not found, please try again</p>
+        }
+        <br /><br />
 
         @if(leagueRequiresPassword)
         {
             <label>Enter league password</label>
             <input type="text" @bind="leaguePasswordInput">
             <button type="submit" @onclick="CheckPassword">Next</button>
+            <br /><br />
         }
-        else        
-            @(showTeamsList = true);
 
         @if(showTeamsList == true)
         {
@@ -54,7 +58,7 @@
     bool leagueRequiresPassword = false;
     string leaguePasswordInput = "";
     bool showTeamsList = false;
-
+    bool leagueNotFound = false;
 
     protected async void OnInitilized()
     {
@@ -66,14 +70,18 @@
         foreach(FantasyLeagueModel l in allLeagues)
         {
             //check the leaague exists
-            if(l.Name == leagueNameInput)
+            if(l.Name.ToLower() == leagueNameInput.ToLower())
             {
                 selectedLeague = l;
 
                 //check if it requires a password
                 if(l.RequirePassword == true)                
-                    leagueRequiresPassword = true;                
+                    leagueRequiresPassword = true;
+                else                
+                    showTeamsList = true;                
             }
+            else            
+                leagueNotFound = true;            
         }
     }
 

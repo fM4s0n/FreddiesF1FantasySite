@@ -92,7 +92,8 @@
                                 <th>Points</th>
                                 <th>Current value</th>
                                 <th>Purchased value</th>
-                                <th>Boosted?</th>
+                                <th>Boosts remaining</th>
+                                <th> </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -101,17 +102,20 @@
                                 <tr>
                                     <td>@driver.DriverName</td>
                                     <td>@driver.PointsScored</td>
-                                    <td>£@(driver.CurrentValue)m</td>
-                                    <td>£@(driver.PurchasedValue)m</td>
-                                    @if(driver.DriverId == team.BoostedDriverId)
-                                    {
-                                        <td><a><i class="fa-solid fa-rocket icon-colour"></i>
-
-                                        </a>
-
-                                        </td>
-                                    }
-
+                                    <td>£@(driver.CurrentValue.ToString("F"))m</td>
+                                    <td>£@(driver.PurchasedValue.ToString("F"))m</td>
+                                    <td>@driver.BoostsRemaining</td> 
+                                    <td>
+                                        @if(driver.DriverId == team.BoostedDriverId)
+                                        {                                            
+                                            <i class="fa-solid fa-rocket icon-colour"></i>
+                                        }
+                                        else
+                                        {
+                                            <p> </p>
+                                        }
+                                    </td>
+                                    
                                 </tr>
                             }
                         </tbody>
