@@ -22,7 +22,10 @@
                 <p>Wins: @driver.MRData.StandingsTable.StandingsLists[0].DriverStandings[0].Wins</p>
             }
         </div>
-
+        @if(apiError)
+        {
+            <p> api error</p>
+        }
         <div class="favourite-control-image">
             <img class="img favourite-control-image" src="@driverImageURL" />
         </div>
@@ -31,10 +34,17 @@
 
 @code {
     DriverResultsModel.Root driver;
+    bool apiError = false;
 
     protected override async Task OnInitializedAsync()
     {
         string json = await ApiService.GetDriverResultsAsync(DateTime.Now.Year, appState.currentUser.FavouriteDriverId);
+
+        if(json == "0")
+        {
+            apiError = true;
+            return;
+        }
 
         driver = JsonConvert.DeserializeObject<DriverResultsModel.Root>(json);
     }

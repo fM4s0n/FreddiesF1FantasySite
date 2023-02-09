@@ -21,105 +21,112 @@
 
 @if(appState.isLoggedIn)
 {
-    <h3>Create a new Fantasy Team</h3>
-
-    if(setupDone)
+    @if(apiError)
     {
-        <p>Create a team by selecting 1 constructor and 4 drivers</p>
-        <p>You have a budget of £100.00m</p>
-        <p>Between each race, there may be no more that 2 changes to a team</p>
+        <p>Server error, please try again later</p>
+    }
+    else
+    {
+        <h3>Create a new Fantasy Team</h3>
 
-        <form id="create-team">
-            <label>Team name</label>
-            <input type="text" class="create-team-imput" @bind="newTeam.Name" />
-            <br />  <br />
+        if(setupDone)
+        {
+            <p>Create a team by selecting 1 constructor and 4 drivers</p>
+            <p>You have a budget of £100.00m</p>
+            <p>Between each race, there may be no more that 2 changes to a team</p>
 
-            <label for="selectConstructor">Select Constructor</label>
-            <select id="selectConstructor" @onchange="@((args) => HandleSelectChanged(args, 0))">
-                <option disabled selected value="0">-----------------------------------</option>
-                @foreach(var c in availableConstructrors)
-                {
-                    <option value="@c.ConstructorId">@(c.ConstructorName) - £@(c.CurrentValue.ToString("F"))m </option>
-                }
-            </select>
-            <br/>
+            <form id="create-team">
+                <label>Team name</label>
+                <input type="text" class="create-team-imput" @bind="newTeam.Name" />
+                <br />  <br />
 
-
-            @*@for(int i = 0; i < 4; i++)
-            {
-                <label for="selectDriver1">Select Driver @(i+1)</label>
-                <select id="selectDriver1" @onchange="@((args) => HandleSelectChanged(args, i+1))">
-                <option disabled selected value="0">---------------</option>
-                    @foreach(var d in availableDrivers1)
-                    {                
-                        <option value="@d.DriverId">@d.DriverName - £@(d.CurrentValue)m</option>
+                <label for="selectConstructor">Select Constructor</label>
+                <select id="selectConstructor" @onchange="@((args) => HandleSelectChanged(args, 0))">
+                    <option disabled selected value="0">-----------------------------------</option>
+                    @foreach(var c in availableConstructrors)
+                    {
+                        <option value="@c.ConstructorId">@(c.ConstructorName) - £@(c.CurrentValue.ToString("F"))m </option>
                     }
                 </select>
                 <br />
-            }*@
 
-            <label for="selectDriver1">Select Driver 1</label>
-            <select id="selectDriver1" @onchange="@((args) => HandleSelectChanged(args, 1))">
-                <option disabled value="0" selected="@(newTeam.Drivers[0].DriverId == "0")">-----------------------------------</option>
+
+                @*@for(int i = 0; i < 4; i++)
+                {
+                <label for="selectDriver1">Select Driver @(i+1)</label>
+                <select id="selectDriver1" @onchange="@((args) => HandleSelectChanged(args, i+1))">
+                <option disabled selected value="0">---------------</option>
                 @foreach(var d in availableDrivers1)
                 {
-                    <option value="@d.DriverId" selected="@(newTeam.Drivers[0].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
+                <option value="@d.DriverId">@d.DriverName - £@(d.CurrentValue)m</option>
                 }
-            </select>
-            <br />
+                </select>
+                <br />
+                }*@
 
-            <label for="selectDriver2">Select Driver 2</label>
-            <select id="selectDriver2" @onchange="@((args) => HandleSelectChanged(args, 2))">
-                <option disabled value="0" selected="@(newTeam.Drivers[1].DriverId == "0")">-----------------------------------</option>
-                @foreach(var d in availableDrivers2)
+                <label for="selectDriver1">Select Driver 1</label>
+                <select id="selectDriver1" @onchange="@((args) => HandleSelectChanged(args, 1))">
+                    <option disabled value="0" selected="@(newTeam.Drivers[0].DriverId == "0")">-----------------------------------</option>
+                    @foreach(var d in availableDrivers1)
+                    {
+                        <option value="@d.DriverId" selected="@(newTeam.Drivers[0].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
+                    }
+                </select>
+                <br />
+
+                <label for="selectDriver2">Select Driver 2</label>
+                <select id="selectDriver2" @onchange="@((args) => HandleSelectChanged(args, 2))">
+                    <option disabled value="0" selected="@(newTeam.Drivers[1].DriverId == "0")">-----------------------------------</option>
+                    @foreach(var d in availableDrivers2)
+                    {
+                        <option value="@d.DriverId" selected="@(newTeam.Drivers[1].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
+                    }
+                </select>
+                <br />
+
+                <label for="selectDriver3">Select Driver 3</label>
+                <select id="selectDriver3" @onchange="@((args) => HandleSelectChanged(args, 3))">
+                    <option disabled value="0" selected="@(newTeam.Drivers[2].DriverId == "0")">-----------------------------------</option>
+                    @foreach(var d in availableDrivers3)
+                    {
+                        <option value="@d.DriverId" selected="@(newTeam.Drivers[2].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
+                    }
+                </select>
+                <br />
+
+                <label for="selectDriver3">Select Driver 4</label>
+                <select id="selectDriver3" @onchange="@((args) => HandleSelectChanged(args, 4))">
+                    <option disabled value="0" selected="@(newTeam.Drivers[3].DriverId == "0")">-----------------------------------</option>
+                    @foreach(var d in availableDrivers4)
+                    {
+                        <option value="@d.DriverId" selected="@(newTeam.Drivers[3].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
+                    }
+                </select>
+                <br />
+
+                <label for="selectDriverBoost">Select Driver to boost</label>
+                <select id="selectDriverBoost" @onchange="@((args) => HandleSelectChanged(args, 5))">
+                    <option disabled value="0" selected="@(newTeam.BoostedDriverId == "")">-----------------------------------</option>
+                    @foreach(var d in availableDriversToBoost)
+                    {
+                        <option value="@d.DriverId" selected="@(newTeam.BoostedDriverId == d.DriverId)">@d.DriverName</option>
+                    }
+                </select>
+                <br /> <br />
+
+
+                <p class="@SetBudgetTextColourClass">Team Value: £@(newTeam.CurrentTeamValue.ToString("F"))m</p>
+                <p>Budget remaining: £@(newTeam.BudgetRemaining.ToString("F"))m</p> <br />
+
+                <button type="submit" disabled="@(!allChecksPass)" @onclick="OnSubmit">Create Team</button>
+
+                @if(nameTaken)
                 {
-                    <option value="@d.DriverId" selected="@(newTeam.Drivers[1].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
+                    <p>name already taken</p>
                 }
-            </select>
-            <br />
-
-            <label for="selectDriver3">Select Driver 3</label>
-            <select id="selectDriver3" @onchange="@((args) => HandleSelectChanged(args, 3))">
-                <option disabled value="0" selected="@(newTeam.Drivers[2].DriverId == "0")">-----------------------------------</option>
-                @foreach(var d in availableDrivers3)
-                {
-                    <option value="@d.DriverId" selected="@(newTeam.Drivers[2].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
-                }
-            </select>
-            <br />
-
-            <label for="selectDriver3">Select Driver 4</label>
-            <select id="selectDriver3" @onchange="@((args) => HandleSelectChanged(args, 4))">
-                <option disabled value="0" selected="@(newTeam.Drivers[3].DriverId == "0")">-----------------------------------</option>
-                @foreach(var d in availableDrivers4)
-                {
-                    <option value="@d.DriverId" selected="@(newTeam.Drivers[3].DriverId == d.DriverId)">@d.DriverName - £@(d.CurrentValue.ToString("F"))m</option>
-                }
-            </select>
-            <br />
-
-            <label for="selectDriverBoost">Select Driver to boost</label>
-            <select id="selectDriverBoost" @onchange="@((args) => HandleSelectChanged(args, 5))">
-                <option disabled value="0" selected="@(newTeam.BoostedDriverId == "")">-----------------------------------</option>
-                @foreach(var d in availableDriversToBoost)
-                {
-                    <option value="@d.DriverId" selected="@(newTeam.BoostedDriverId == d.DriverId)">@d.DriverName</option>
-                }
-            </select>
-            <br /> <br />
-
-
-            <p class="@SetBudgetTextColourClass">Team Value: £@(newTeam.CurrentTeamValue.ToString("F"))m</p>
-            <p>Budget remaining: £@(newTeam.BudgetRemaining.ToString("F"))m</p> <br />
-
-            <button type="submit" disabled="@(!allChecksPass)" @onclick="OnSubmit">Create Team</button>
-
-            @if(nameTaken)
-            {
-                <p>name already taken</p>
-            }
-        </form>
-    }
+            </form>
+        }
+    }    
 }
 
 
@@ -131,6 +138,7 @@
     bool nameTaken = false;
     bool setupDone = false;
     bool allChecksPass = false;
+    bool apiError = false;
 
     //lists of drivers and constructors to choose from
     List<ConstructorTeamMembershipModel> availableConstructrors = new();
@@ -174,6 +182,11 @@
     private async Task GetConstructors()
     {
         var json = await ApiService.GetConstructorStandingsAsync(DateTime.Now.Year.ToString());
+        if(json == "0")
+        {
+            apiError = true;
+            return;
+        }
         ConstructorStandingsModel.Root deserialised = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(json);
         foreach (ConstructorStandingsModel.ConstructorStanding c in deserialised.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
         {
@@ -188,6 +201,11 @@
     private async Task GetDrivers()
     {
         var json = await ApiService.GetDriverStandingsAsync(DateTime.Now.Year.ToString());
+        if(json == "0")
+        {
+            apiError = true;
+            return;
+        }
         DriverStandingsModel.Root deserialised = JsonConvert.DeserializeObject<DriverStandingsModel.Root>(json);
         foreach(DriverStandingsModel.DriverStandings d in deserialised.MRData.StandingsTable.StandingsLists[0].DriverStandings)
         {

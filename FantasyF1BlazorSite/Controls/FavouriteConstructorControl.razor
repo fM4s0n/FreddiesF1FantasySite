@@ -22,7 +22,10 @@
                 <p>Wins: @constructor.MRData.StandingsTable.StandingsLists[0].ConstructorStandings[0].Wins</p>
             }
         </div>
-
+        @if(apiError)
+        {
+            <p> API Error</p>
+        }
         <div class="favourite-control-image">
             <img class="img favourite-control-image" src="@constructorLogoURL" />
         </div>
@@ -31,10 +34,15 @@
 
 @code {
     ConstructorStandingsModel.Root constructor;
+    bool apiError = false;
 
     protected override async Task OnInitializedAsync ()
     {
         string json = await ApiService.GetConstructorResultsAsync(DateTime.Now.Year, appState.currentUser.FavouriteConstructorId);
+        if (json == "0")
+        {
+            return;
+        }
 
         constructor = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(json);
     }

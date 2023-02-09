@@ -30,9 +30,15 @@ public class SqlDataAccess : ISqlDataAccess
 
         using IDbConnection connection = new SqlConnection(connectionString);
         {
-            var data = await connection.QueryAsync<T>(sql, parameters);
-
-            return data.ToList();
+            try
+            {
+                var data = await connection.QueryAsync<T>(sql, parameters);
+                return data.ToList();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 
@@ -49,7 +55,14 @@ public class SqlDataAccess : ISqlDataAccess
 
         using IDbConnection connection = new SqlConnection(connectionString);
         {
-            await connection.ExecuteAsync(sql, parameters);
+            try
+            {
+                var name = await connection.ExecuteAsync(sql, parameters);
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }        
         }
     }
 }
