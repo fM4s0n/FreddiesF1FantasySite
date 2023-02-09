@@ -24,9 +24,9 @@
             <h2>My Leagues</h2>
             <a href="/Fantasy/CreateLeague">Create a new League</a>
 
-            @if (leagues is not null)
+            @if (_ownedLeagues is not null)
             {
-                @foreach (FantasyLeagueModel league in leagues)
+                @foreach (FantasyLeagueModel league in _ownedLeagues)
                 {
                     <div class="fantasy-league-home-control" style="flex:auto">
                         <div class="fantasy-home-control-head">
@@ -76,9 +76,9 @@
 
     <h2>My Teams</h2>
     <a href="/Fantasy/CreateTeam">Create a new Team</a>
-        @if (ownedTeams is not null)
+        @if (_ownedTeams is not null)
         {
-            @foreach (FantasyTeamModel team in ownedTeams)
+            @foreach (FantasyTeamModel team in _ownedTeams)
             {
                 <div class="fantasy-team-home-control">
                     <div class="fantasy-home-control-head">
@@ -157,9 +157,9 @@ else
 
 
 @code {
-    List<FantasyTeamModel> allTeams = new();
-    List<FantasyTeamModel> ownedTeams = new();
-    List<FantasyLeagueModel> leagues = new();
+    List<FantasyTeamModel> _allTeams = new();
+    List<FantasyTeamModel> _ownedTeams = new();
+    List<FantasyLeagueModel> _ownedLeagues = new();
 
     bool setupDone = false;
 
@@ -179,11 +179,11 @@ else
     private async Task GetOwnedLeagues()
     {
         //get all leagues a user Owns
-        leagues = await leagueData.GetAllLeagues();
-        foreach (var league in leagues.ToList())
+        _ownedLeagues = await leagueData.GetAllLeagues();
+        foreach (var league in _ownedLeagues.ToList())
         {
             if (league.OwnerId != appState.currentUser.UserId)
-                leagues.Remove(league);
+                _ownedLeagues.Remove(league);
         }
     }
 
@@ -193,14 +193,14 @@ else
     private async Task GetOwnedTeams()
     {
         //Get all teams a user owns
-        allTeams = await teamData.GetAllTeams();
-        foreach (var t in allTeams)
+        _allTeams = await teamData.GetAllTeams();
+        foreach (var t in _allTeams)
         {
             if (t.OwnerId == appState.currentUser.UserId)
-                ownedTeams.Add(t);
+                _ownedTeams.Add(t);
         }
 
-        foreach(var team in ownedTeams)
+        foreach(var team in _ownedTeams)
         {
             team.Constructors = await GetTeamConstructorList(team);
             team.Drivers = await GetTeamDriverList(team);
@@ -209,9 +209,9 @@ else
 
     private async Task GetLeagueTeams()
     {
-        for(int i = 0; i < leagues.Count; i++)
+        for(int i = 0; i < _ownedLeagues.Count; i++)
         {
-            leagues[i].Teams = allTeams.Where(t => t.LeagueId == leagues[i].LeagueId).ToList();
+            _ownedLeagues[i].Teams = _allTeams.Where(t => t.LeagueId == _ownedLeagues[i].LeagueId).ToList();
         }
     }
 

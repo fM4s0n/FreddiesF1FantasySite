@@ -2,32 +2,124 @@
 
 @using DataAccess.API
 @using DataAccess.Database
+@using DataAccess.Models.General;
 @using DataAccess.Services
 @using DataAccess.Models
+@using DataAccess.Models.Fantasy
+@using Newtonsoft.Json;
 
 @inject AppStateService appState
 @inject IUserData userData
 @inject NavigationManager navMan
 
-@if(appState.currentUser.UserLevel is not UserLevels.Administrator)
+@if(appState.currentUser.UserLevel != UserLevels.Administrator)
 {
     navMan.NavigateTo("/Fanatasy/Home");
 }
 else
 {
-    <div>
-        <h3>Update Points - Quali</h3>
-    </div>
+    @if(_apiDown)
+    {
+        <p>API is down!</p>
+    }
+    else
+    {
+        <div>
+            <h3>Qualifying</h3> 
 
-    <div>
-        <h3>Update points - Race</h3>
-    </div>
+            <label>Update points - Qualifying</label>
+            <button type="button">Go</button>
 
+            <br /><br />
+        </div>
+
+        <div>
+            <h3>Race</h3>
+
+            <label>Driver of the Day</label>
+            <select @bind="_dotdDriverId">
+                @foreach(var driver in _allDrivers)
+                {
+                    <option value="@driver.DriverId">@driver.DriverName</option>
+                }
+            </select>
+
+            <label>Fastest pitstop</label>
+            <select @bind="_pitstopConstructorId">
+                @foreach(var constructor in _allConstructors)
+                {
+                    <option value="@constructor.ConstructorId">@constructor.ConstructorName</option>
+                }
+            </select>
+
+            <label>Update points - Race</label>
+            <button type="button">Go</button>
+        </div>
+    }
 }
 
 
 
 @code {
-    //page only available to admins to manually update points after quali/race 
-       
+    bool _apiDown = false;
+    List<DriverTeamMembershipModel> _allDrivers = new();
+    List<ConstructorTeamMembershipModel> _allConstructors = new();
+    string _dotdDriverId = "";
+    string _pitstopConstructorId = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetAllDrivers();
+        await GetAllConstructors();
+    }
+
+    private async Task GetAllDrivers()
+    {
+        int year;
+        int currentMonth = DateTime.Now.Month;
+        if(currentMonth < 3)        
+            year = DateTime.Now.Year -1;
+        else
+            year = DateTime.Now.Year;
+
+        var json = await ApiService.GetDriverStandingsAsync(year.ToString());
+        if(json == "0")
+        {
+            _apiDown = true;
+            return;
+        }
+        DriverStandingsModel.Root deserialised = JsonConvert.DeserializeObject<DriverStandingsModel.Root>(json);
+        foreach(DriverStandingsModel.DriverStandings d in deserialised.MRData.StandingsTable.StandingsLists[0].DriverStandings)
+        {
+            DriverTeamMembershipModel dri = new();
+            dri.DriverId = d.Driver.DriverId;
+
+            _allDrivers.Add(dri);
+        }
+    }
+
+    private async Task GetAllConstructors()
+    {
+        int year;
+        int currentMonth = DateTime.Now.Month;
+        if(currentMonth < 3)
+            year = DateTime.Now.Year - 1;
+        else
+            year = DateTime.Now.Year;
+
+        var json = await ApiService.GetConstructorStandingsAsync(year.ToString());
+        if(json == "0")
+        {
+            _apiDown = true;
+            return;
+        }
+        ConstructorStandingsModel.Root deserialised = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(json);
+        foreach(ConstructorStandingsModel.ConstructorStanding c in deserialised.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
+        {
+            ConstructorTeamMembershipModel con = new();
+            con.ConstructorId = c.Constructor.ConstructorId;
+
+            _allConstructors.Add(con);
+        }
+    }
 }
