@@ -336,7 +336,7 @@
                 dtm.CurrentlyBoosted = true;
             else
                 dtm.CurrentlyBoosted = false;
-            
+
             await dtmData.InsertDriverTeamMembership(dtm);
         }
 
@@ -346,10 +346,11 @@
 
     private void CheckInputs()
     {
-        if(newTeam.Name != "" && newTeam.CurrentTeamValue <= 100 && newTeam.Constructors.All(t => t.ConstructorId != "0") && newTeam.Drivers.All(t => t.DriverId != "0") && usersOwnedTeams.All(r => r.Name != newTeam.Name))
-        {
+        if (newTeam.Name != "" && newTeam.CurrentTeamValue <= 100 && newTeam.Constructors.All(t => t.ConstructorId != "0") && newTeam.Drivers.All(t => t.DriverId != "0") && usersOwnedTeams.All(r => r.Name != newTeam.Name))
             allChecksPass = true;
-        }
+        else
+            allChecksPass = false;
+
     }
 
     private void SetBudgetTextColourClass()

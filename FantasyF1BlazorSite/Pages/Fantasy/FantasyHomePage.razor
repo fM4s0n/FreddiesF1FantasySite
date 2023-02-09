@@ -18,7 +18,8 @@
 
 @if (appState.isLoggedIn)
 {
-    <div>
+    @if(setupDone)
+    {
         <div>
             <h2>My Leagues</h2>
             <a href="/Fantasy/CreateLeague">Create a new League</a>
@@ -54,7 +55,7 @@
                                             @if(league.Teams[i].OwnerId == appState.currentUser.UserId)
                                             {
                                                 <td>
-                                                    <a href="/Fantasy/ManageTeam/TeamId=(@league.Teams[i].TeamId)" style="flex-grow:1"><i class="fa-solid fa-gear"></i></a>
+                                                    <a href="/Fantasy/ManageTeam/@league.Teams[i].TeamId" style="flex-grow:1"><i class="fa-solid fa-gear"></i></a>
                                                 </td>                                                
                                             }
                                         </tr>
@@ -73,8 +74,8 @@
             <br /><br />
         </div>
 
-        <h2>My Teams</h2>
-        <a href="/Fantasy/CreateTeam">Create a new Team</a>
+    <h2>My Teams</h2>
+    <a href="/Fantasy/CreateTeam">Create a new Team</a>
         @if (ownedTeams is not null)
         {
             @foreach (FantasyTeamModel team in ownedTeams)
@@ -82,7 +83,7 @@
                 <div class="fantasy-team-home-control">
                     <div class="fantasy-home-control-head">
                         <h4 style="flex-grow:20">@team.Name</h4>
-                        <a href="/Fantasy/ManageTeam/TeamId=(@team.TeamId)" style="flex-grow:1"><i class="fa-solid fa-gear icon-colour"></i></a>
+                        <a href="/Fantasy/ManageTeam/@team.TeamId" style="flex-grow:1"><i class="fa-solid fa-gear icon-colour"></i></a>
                     </div>
 
                     <table class="table">
@@ -91,7 +92,6 @@
                                 <th>Driver</th>
                                 <th>Points</th>
                                 <th>Current value</th>
-                                <th>Purchased value</th>
                                 <th>Boosts remaining</th>
                                 <th> </th>
                             </tr>
@@ -103,7 +103,6 @@
                                     <td>@driver.DriverName</td>
                                     <td>@driver.PointsScored</td>
                                     <td>£@(driver.CurrentValue.ToString("F"))m</td>
-                                    <td>£@(driver.PurchasedValue.ToString("F"))m</td>
                                     <td>@driver.BoostsRemaining</td> 
                                     <td>
                                         @if(driver.DriverId == team.BoostedDriverId)
@@ -127,7 +126,6 @@
                                 <th>Constructor</th>
                                 <th>Points</th>
                                 <th>Current value</th>
-                                <th>Purchased value</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -137,20 +135,20 @@
                                     <td>@constructor.ConstructorName</td>
                                     <td>@constructor.PointsScored</td>
                                     <td>£@(constructor.CurrentValue.ToString("F"))m</td>
-                                    <td>£@(constructor.PurchasedValue.ToString("F"))m</td>
                                 </tr>
                             }
                         </tbody>
                     </table>
 
-
+                    <div style="width:100%; display:flex; flex-wrap:wrap">
+                        <p style="flex-grow:5">Budget Remaining: @(team.BudgetRemaining.ToString("F"))m</p>
+                        <p style="flex-grow:15">Team value: @(team.CurrentTeamValue.ToString("F"))m</p>
+                    </div>
                     <p>Total points: @team.TotalPoints</p>
-                    <p>Budget Remaining: @(team.BudgetRemaining.ToString("F"))m</p>
-                    <p>Team value: @(team.CurrentTeamValue.ToString("F"))m</p>
                 </div>
             }
         }
-    </div>
+    }
 }
 else
 {
@@ -159,13 +157,19 @@ else
 
 
 @code {
+    List<FantasyTeamModel> allTeams = new();
     List<FantasyTeamModel> ownedTeams = new();
     List<FantasyLeagueModel> leagues = new();
+
+    bool setupDone = false;
 
     protected override async Task OnInitializedAsync()
     {
         await GetOwnedLeagues();
+        await GetLeagueTeams();
+
         await GetOwnedTeams();
+        setupDone = true;
     }
 
     /// <summary>
@@ -176,7 +180,7 @@ else
     {
         //get all leagues a user Owns
         leagues = await leagueData.GetAllLeagues();
-        foreach (var league in leagues)
+        foreach (var league in leagues.ToList())
         {
             if (league.OwnerId != appState.currentUser.UserId)
                 leagues.Remove(league);
@@ -189,20 +193,26 @@ else
     private async Task GetOwnedTeams()
     {
         //Get all teams a user owns
-        ownedTeams = await teamData.GetAllTeams();
-        foreach (var t in ownedTeams)
+        allTeams = await teamData.GetAllTeams();
+        foreach (var t in allTeams)
         {
-            if (t.OwnerId != appState.currentUser.UserId)
-                ownedTeams.Remove(t);
+            if (t.OwnerId == appState.currentUser.UserId)
+                ownedTeams.Add(t);
         }
-
 
         foreach(var team in ownedTeams)
         {
             team.Constructors = await GetTeamConstructorList(team);
             team.Drivers = await GetTeamDriverList(team);
         }
+    }
 
+    private async Task GetLeagueTeams()
+    {
+        for(int i = 0; i < leagues.Count; i++)
+        {
+            leagues[i].Teams = allTeams.Where(t => t.LeagueId == leagues[i].LeagueId).ToList();
+        }
     }
 
     /// <summary>
