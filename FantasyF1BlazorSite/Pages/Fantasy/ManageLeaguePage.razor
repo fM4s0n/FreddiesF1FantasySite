@@ -6,21 +6,68 @@
 @using DataAccess.Models.Fantasy
 @using DataAccess.Models
 
-@inject UserData userdata
+@inject IUserData userData
 @inject AppStateService appState
 @inject ILeagueData leagueData
 @inject ITeamData teamData
 
-<h2>Manage My League</h2>
-<h3>@currentLeague.Name</h3>
+<head>
+    <title>Manage my league</title>
+</head>
 
-<h3>All teams:</h3>
+@if(_selectedLeague is not null)
+{
+    @if(_selectedLeague.OwnerId == appState.currentUser.UserId)
+    {
+        @if(setupDone)
+        {
+            <h2>Manage My League</h2>
+            <h3>@_selectedLeague.Name</h3>
 
-@foreach(FantasyTeamModel team in teams)
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pos.</th>
+                        <th>Team</th>
+                        <th>Owner</th>
+                        <th>Points</th>
+                        <th>Remove team</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for(int i = 0; i < _selectedLeague.Teams.Count; i++)
+                    {
+                        <tr>
+                            <td>@(i+1)</td>
+                            <td>@_selectedLeague.Teams[i].Name</td>
+                            <td>@GetUsernameOfTeamOwner(_selectedLeague.Teams[i].OwnerId)</td>
+                            <td>@_selectedLeague.Teams[i].TotalPoints</td>
+                            <td>
+                                <a @onclick="@((args) => KickTeam(args, _selectedLeague.Teams[i].TeamId))"><i class="fa-sharp fa-solid fa-user-xmark"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    }
+    else
+    {
+        <p>You don't own this league</p>
+    }
+}
+else
+{
+    <p>Loading...</p>
+}
+
+
+
+@foreach(FantasyTeamModel team in _teams)
 {
     <div class="manage-league-team-control">
         <h4>Team name: @team.Name</h4>
-        <p>Team owner: @GetUsername(team.OwnerId)</p>
+        <p>Team owner: @GetUsernameOfTeamOwner(team.OwnerId)</p>
         <p>Team Value: @team.CurrentTeamValue</p>
         <p>Team Budget remaining: @team.BudgetRemaining</p>
         @if(team.Drivers is not null)
@@ -30,7 +77,6 @@
                 <p>@driver.DriverId</p>
             }
         }
-
         <p>Boosted driver: @team.BoostedDriverId</p>
     </div>
 }
@@ -38,24 +84,22 @@
 @code {
     [Parameter]
     public string passedLeagueId { get; set; } = string.Empty;
-
-    FantasyLeagueModel currentLeague = new();
-    List<FantasyTeamModel> teams = new();
-    List<UserModel> allUsers = new();
+    bool setupDone = false;
+    FantasyLeagueModel? _selectedLeague = null;
+    List<FantasyTeamModel> _teams = new();
+    List<UserModel> _allUsers = new();
 
     protected override async Task OnInitializedAsync()
     {
-        allUsers = await userdata.GetAllUsers();
+        List<FantasyLeagueModel> allLeagues = new();
+        allLeagues = await leagueData.GetAllLeagues();
 
-        List<FantasyLeagueModel> allLeagues = await leagueData.GetAllLeagues();
-        foreach(var l in allLeagues)
-        {
-            if (l.LeagueId == passedLeagueId)
-                currentLeague = l;
-        }
+        if(allLeagues is not null)        
+            _selectedLeague = allLeagues.FirstOrDefault(t => t.LeagueId == passedLeagueId);       
 
         //Get all teams in the league
-        teams = await teamData.GetTeamsByLeagueId(passedLeagueId);
+        _selectedLeague.Teams = await teamData.GetTeamsByLeagueId(passedLeagueId);
+        _selectedLeague.Teams.OrderBy(t => t.TotalPoints);
     }
 
     /// <summary>
@@ -63,15 +107,29 @@
     /// </summary>
     /// <param name="Ownerid"></param>
     /// <returns></returns>
-    private string GetUsername(string Ownerid)
+    private string GetUsernameOfTeamOwner(string Ownerid)
     {
         UserModel teamOwner = new();
 
-        foreach(UserModel u in allUsers)
+        foreach(UserModel u in _allUsers)
         {
             if (u.UserId == Ownerid)
                 teamOwner = u;
         }
         return teamOwner.Username;
+    }
+
+    private void KickTeam(MouseEventArgs args, string teamId)
+    {
+        if(args is not null)
+        {
+            _selectedLeague.Teams.RemoveAll(t => t.TeamId == teamId);
+
+            FantasyTeamModel team = new();
+            team.TeamId = teamId;
+            team.LeagueId = "";
+
+            teamData.UpdateTeamDetails(team);
+        }
     }
 }
