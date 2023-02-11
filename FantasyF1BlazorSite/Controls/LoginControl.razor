@@ -21,7 +21,17 @@
     <label for="password">Password:</label>
     <br />
     <input type="password" class="login-input" name="Password" id="password" placeholder="Password" @bind="passwordEntered" />
-    <br /><br />
+
+    @if (loginFailed)
+    {
+        <p style ="color:red">Login attempt failed, check username and password and try again</p>
+    }
+
+    @if(loginIncomplete)
+    {
+        <p style="color:red">Please eneter a username and password</p>
+    }
+
     <a href="/Account/Create" style="float:right"> Don't have an account? Sign up here!</a>
     <br /><br />
 </form>
@@ -35,6 +45,8 @@
 @code {
     string usernameEntered = "";
     string passwordEntered = "";
+    bool loginFailed = false;
+    bool loginIncomplete = false;
 
     /// <summary>
     /// Check if the login details are accurate
@@ -42,6 +54,12 @@
     /// </summary>
     private async void CheckLogin ()
     {
+        @if(string.IsNullOrWhiteSpace(usernameEntered) || string.IsNullOrWhiteSpace(passwordEntered))
+        {
+            loginIncomplete = true;
+            return;
+        }
+
         List<UserModel> users = new();
         users = await userData.GetAllUsers();
 
@@ -56,17 +74,12 @@
                     {
                         appState.LogIn(u);
                         navMan.NavigateTo("/", true);
-                        break;
                     }
                     else
-                    {
-
-                    }
+                        loginFailed = true;
                 }
                 else
-                {
-
-                }
+                    loginFailed = true;                
             }
         }
     }

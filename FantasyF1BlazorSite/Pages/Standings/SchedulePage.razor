@@ -14,7 +14,7 @@
 
 <h2 style="text-align:center">Season Schedule</h2>
 
-@if(season.MRData is not null)
+@if(season is not null)
 {
     <table class="table">
         <thead>
@@ -63,7 +63,7 @@ else
 
 
 @code {
-    SeasonScheduleModel.Root season = new();
+    SeasonScheduleModel.Root? season;
 
     protected override async Task OnInitializedAsync()
     {

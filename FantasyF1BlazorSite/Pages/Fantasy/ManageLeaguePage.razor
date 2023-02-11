@@ -21,9 +21,14 @@
     {
         @if(_selectedLeague.OwnerId == appState.currentUser.UserId)
         {
-            <h2>Manage My League</h2> <br />
-            <h3>@_selectedLeague.Name</h3>
-            
+            <h2>Manage My League | @(_selectedLeague.Name) </h2>
+            <br />
+
+            <label>League Password</label>
+            <input type="password" @bind="_selectedLeague.Password" contenteditable="@passwordEdit"/>
+            <i class="fa-sharp fa-solid fa-eye"></i>
+            <button @onclick="TogglePasswordEdit">Edit</button>
+
             <table class="table" style="text-align:center">
                 <thead>
                     <tr>
@@ -34,32 +39,23 @@
                         <th>Remove team</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @for(int i = 0; i < _selectedLeague.Teams.Count; i++)
-                    {
-                        <tr>
-                            <td>@(i + 1)</td>
-                            <td>@_selectedLeague.Teams[i].Name</td>
-                            <td>@GetUsernameOfTeamOwner(_selectedLeague.Teams[i].OwnerId)</td>
-                            <td>@_selectedLeague.Teams[i].TotalPoints</td>
-                            <td>
-                                <i @onclick="@((args) => KickTeam(_selectedLeague.Teams[i].TeamId))" class="fa-sharp fa-solid fa-user-xmark icon-colour" style="cursor:pointer"></i>
-                            </td>
-                        </tr>
-                    }
+                <tbody>                    
                     @foreach(FantasyTeamModel team in _selectedLeague.Teams)
                     {
-                        <td>@team.</td>
-                        <td>@_selectedLeague.Teams[i].Name</td>
-                        <td>@GetUsernameOfTeamOwner(_selectedLeague.Teams[i].OwnerId)</td>
-                        <td>@_selectedLeague.Teams[i].TotalPoints</td>
-                        <td>
-                            <i @onclick="@((args) => KickTeam(_selectedLeague.Teams[i].TeamId))" class="fa-sharp fa-solid fa-user-xmark icon-colour" style="cursor:pointer"></i>
-                        </td>
-                    }
+                        <tr>
+                            @(pos += 1)
+
+                            <td>@pos</td>
+                            <td>@team.Name</td>
+                            <td>@GetUsernameOfTeamOwner(team.OwnerId)</td>
+                            <td>@team.TotalPoints</td>
+                            <td>
+                                <i @onclick="@((args) => KickTeam(team.TeamId))" class="fa-sharp fa-solid fa-user-xmark icon-colour" style="cursor:pointer" />
+                            </td>
+                        </tr>
+                    }                    
                 </tbody>
             </table>
-
         }
         else
         {
@@ -80,6 +76,10 @@ else
     FantasyLeagueModel? _selectedLeague = null;
     List<FantasyTeamModel> _allTeams = new();
     List<UserModel> _allUsers = new();
+
+    int pos = 0;
+    bool passwordEdit = false;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -135,8 +135,8 @@ else
         }
     }
 
-    private void Test()
+    private void TogglePasswordEdit()
     {
-        
+        passwordEdit = !passwordEdit;
     }
 }

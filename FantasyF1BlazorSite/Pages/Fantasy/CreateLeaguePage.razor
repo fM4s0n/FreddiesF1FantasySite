@@ -14,15 +14,19 @@
 
 <form id="create-league">
     <label for="leagueNameInput">League name</label>
-    <input type="text" class="create-league-input" @bind="league.Name" id="leagueNameInput"/>
+    <input type="text" class="create-league-input" @onchange="@((args) => CheckLeagueNameTaken(args))" id="leagueNameInput"/>
+    @if(leagueNameTaken)
+    {
+        <p style="color:red">League name taken, please enter a new name</p>
+    }
     <br /><br />
 
     <label for="requirePasswordCheckbox">Require password?</label>
-    <input type="checkbox" id="requirePasswordCheckbox" @bind="league.RequirePassword"/>
+    <input type="checkbox" id="requirePasswordCheckbox" @bind="_newLeague.RequirePassword"/>
     <p style="font-size:smaller">-Select to require a password when a team enters your league</p>
 
 
-    @if(league.RequirePassword)
+    @if(_newLeague.RequirePassword)
     {
         <label for="leaguePassword1">League Password</label>
         <input type="password" class="create-league-input" id="leaguePassword1" @bind="password1"></input>
@@ -38,32 +42,47 @@
 
 
 @code {
-    UserModel user = new();
-    FantasyLeagueModel league = new();
+    FantasyLeagueModel _newLeague = new();
+    List<FantasyLeagueModel> _allLeagues = new();
+    List<string> _allLeagueNames = new();
 
     string password1 = "";
     string password2 = "";
+    bool passwordsDontMatch = false;
+    bool leagueNameTaken;
 
-    protected override void OnInitialized()
+    protected override async void OnInitialized()
     {
-        user = appState.currentUser;
+        _allLeagues = await leagueData.GetAllLeagues();
+
+        foreach (var league in _allLeagues)
+            _allLeagueNames.Add(league.Name);
     }
 
     private async void OnSubmit()
     {
-        league.LeagueId = Guid.NewGuid().ToString();
-        league.OwnerId = user.UserId;
-        league.CreatedDate = DateTime.Now;
+        _newLeague.LeagueId = Guid.NewGuid().ToString();
+        _newLeague.OwnerId = appState.currentUser.UserId;
+        _newLeague.CreatedDate = DateTime.Now;
 
-        if (league.RequirePassword && password1 == password2)
-        {
-            league.Password = password1;
-        }
+        if (_newLeague.RequirePassword && password1 == password2)        
+            _newLeague.Password = password1;        
 
-        if (league.RequirePassword && password1 != password2)
-            return;
+        if (password1 != password2)        
+            passwordsDontMatch = true;        
 
-        await leagueData.InsertLeague(league);
+        await leagueData.InsertLeague(_newLeague);
         navMan.NavigateTo("/Fantasy/Home", true);
+    }
+
+    private void CheckLeagueNameTaken(ChangeEventArgs args)
+    {
+        if (args is not null)
+        {
+            if(_allLeagueNames.Contains(_newLeague.Name))
+            {
+                leagueNameTaken = true;
+            }
+        }
     }
 }
