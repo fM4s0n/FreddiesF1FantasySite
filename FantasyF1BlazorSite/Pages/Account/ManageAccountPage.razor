@@ -4,6 +4,7 @@
 @using DataAccess.API
 @using DataAccess.Database
 @using DataAccess.Models
+@using Microsoft.AspNetCore.Identity;
 @using Newtonsoft.Json
 @using DataAccess.Dictionaries
 @using DataAccess.Models.General
@@ -16,6 +17,10 @@
 
 @if (appState.isLoggedIn)
 {
+    <label>Please re-enter you password</label>
+    <input type="password" @bind="passwordInitialCheck"/>
+    <button type="button" @onclick="CheckInitialPassword">Next</button>
+
     @if (user is not null)
     {
         <form id="manage-account">
@@ -41,7 +46,8 @@
             <br /><br />
 
             <label for="accountPassword">Password</label><br />
-            <input type="password" id="accountPassword" class="manage-account-input" @bind="user.Password" />
+            <input type="password" id="accountPassword" class="manage-account-input" @bind="passwordInputText" />
+            <button type="button" @onclick="PasswordEditButtonToggle">Edit</button>
             <br /><br />
 
             <label for="accountFullName">Full name:</label><br />
@@ -85,9 +91,14 @@
 
 
 @code {
+    PasswordHasher<UserModel> passwordHasher = new();
     DriverStandingsModel.Root? drivers;
     ConstructorStandingsModel.Root? constructors;
     UserModel user = new();
+    string passwordInputText = "";
+    string passwordEditCancelButtonText = "Edit";
+    string passwordInitialCheck = "";
+    bool? userVerified = null;
 
     protected override async Task OnInitializedAsync ()
     {
@@ -100,6 +111,33 @@
         constructors = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(constructorJson);
     }
 
+    private void PasswordEditButtonToggle()
+    {
+        if(passwordEditCancelButtonText == "Edit")
+            passwordEditCancelButtonText = "Cancel";
+        else        
+            passwordEditCancelButtonText = "Edit";        
+    }
+
+    private string HashPassword(string unhashedPassword)
+    {
+        return passwordHasher.HashPassword(user, unhashedPassword);
+    }
+
+    private PasswordVerificationResult VerifyPassword (string hashedPassword, string unhashedPassword)
+    {
+        return passwordHasher.VerifyHashedPassword(user, hashedPassword, unhashedPassword);
+    }
+
+    private void CheckInitialPassword()
+    {
+        string initialHashedPassword = HashPassword(passwordInitialCheck);
+        if(VerifyPassword(initialHashedPassword, passwordInitialCheck) == PasswordVerificationResult.Success)        
+            userVerified = true;        
+        else        
+            userVerified = false;        
+    }
+
     private void GetApiIds()
     {
         user.FavouriteDriverId = DriverIdDictionary.GetDriverId(user.FavouriteDriverName);
@@ -109,7 +147,7 @@
     private async void UpdateAccount ()
     {
         GetApiIds();
-
+        user.Password = HashPassword();
         await userData.UpdateUserDetails(user);
         
         //refresh user info on page
