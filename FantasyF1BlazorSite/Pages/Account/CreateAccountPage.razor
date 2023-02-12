@@ -4,6 +4,7 @@
 @using DataAccess.API
 @using DataAccess.Database
 @using DataAccess.Models
+@using Microsoft.AspNetCore.Identity;
 @using Newtonsoft.Json
 @using DataAccess.Dictionaries;
 @using DataAccess.Models.General;
@@ -23,31 +24,31 @@
     <br /><br />
 
     <label for="accountPassword">Password</label>
-    <input type="password" id="accountPassword" class="create-account-input" @bind="user.Password" />
+    <input type="password" id="accountPassword" class="create-account-input" @bind="passwordInputText" />
     <br /><br />
 
     <label for="selectFavDriver">Favourite Driver</label>
-    <select id="selectFavDriver" class="create-account-input" @bind="@user.FavouriteDriverName">
+    <select id="selectFavDriver" class="create-account-input" @bind="@user.FavouriteDriverId">
         <option>---Select driver---</option>
 
         @if (drivers is not null)
         {
             @foreach (var driver in drivers.MRData.StandingsTable.StandingsLists[0].DriverStandings)
             {
-                <option value="@driver.Driver.FullName">@driver.Driver.FullName</option>
+                <option value="@driver.Driver.DriverId">@driver.Driver.FullName</option>
             }
         }
     </select> <br /><br />
 
     <label for="selectFavConstructor">Favourite Constructor</label>
-    <select id="selectFavConstructor" class="create-account-input" @bind="@user.FavouriteConstructorName">
+    <select id="selectFavConstructor" class="create-account-input" @bind="@user.FavouriteConstructorId">
         <option>---Select constructor---</option>
 
         @if (constructors is not null)
         {
             @foreach (var constructor in constructors.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
             {
-                <option value="@constructor.Constructor.Name">@constructor.Constructor.Name</option>
+                <option value="@constructor.Constructor.ConstructorId">@constructor.Constructor.Name</option>
             }
         }
     </select><br /><br />
@@ -55,10 +56,12 @@
 </form>
 
 @code {
+    public PasswordHasher<UserModel> passwordHasher = new();
     DriverStandingsModel.Root drivers = new();
     ConstructorStandingsModel.Root constructors = new();
     UserModel user = new();
     bool usernameTaken = false;
+    string passwordInputText = "";
 
     protected override async Task OnInitializedAsync ()
     {
@@ -67,12 +70,6 @@
 
         var constructorJson = await ApiService.GetConstructorStandingsAsync(DateTime.Now.Year.ToString());
         constructors = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(constructorJson);
-    }
-
-    private void GetApiIds()
-    {
-        user.FavouriteDriverId = DriverIdDictionary.GetDriverId(user.FavouriteDriverName);
-        user.FavouriteConstructorId = ConstructorIdDictionary.GetConstructorID(user.FavouriteConstructorName);
     }
 
     private async void CheckUsernameIsUnique()
@@ -93,14 +90,19 @@
 
     private async Task CreateNewUser()
     {
-        GetApiIds();
-
         user.UserId = Guid.NewGuid().ToString();
+
+        user.Password = HashPassword();
 
         await userData.InsertUser(user);
 
         //display success message then ask user to login
 
         //return to login page
+    }
+
+    private string HashPassword()
+    {
+        return passwordHasher.HashPassword(user, passwordInputText);
     }
 }

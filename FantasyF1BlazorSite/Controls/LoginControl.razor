@@ -1,6 +1,7 @@
 ﻿@using DataAccess.Services
 @using DataAccess.Models
 @using DataAccess.Database
+@using Microsoft.AspNetCore.Identity;
 
 @inject AppStateService appState
 @inject NavigationManager navMan
@@ -16,11 +17,11 @@
 
     <label for="username">Username:</label>
     <br />
-    <input type="text" class="login-input" name="Username" id="username" placeholder="Username" @bind="usernameEntered" />
+    <input type="text" class="login-input" name="Username" id="username" placeholder="Username" @bind="usernameInputText" />
     <br /> <br />
     <label for="password">Password:</label>
     <br />
-    <input type="password" class="login-input" name="Password" id="password" placeholder="Password" @bind="passwordEntered" />
+    <input type="password" class="login-input" name="Password" id="password" placeholder="Password" @bind="passwordInputText" />
 
     @if (loginFailed)
     {
@@ -43,8 +44,9 @@
 </div>
 
 @code {
-    string usernameEntered = "";
-    string passwordEntered = "";
+    PasswordHasher<UserModel> passwordHasher = new();
+    string usernameInputText = "";
+    string passwordInputText = "";
     bool loginFailed = false;
     bool loginIncomplete = false;
 
@@ -54,7 +56,7 @@
     /// </summary>
     private async void CheckLogin ()
     {
-        @if(string.IsNullOrWhiteSpace(usernameEntered) || string.IsNullOrWhiteSpace(passwordEntered))
+        @if(string.IsNullOrWhiteSpace(usernameInputText) || string.IsNullOrWhiteSpace(passwordInputText))
         {
             loginIncomplete = true;
             return;
@@ -63,14 +65,17 @@
         List<UserModel> users = new();
         users = await userData.GetAllUsers();
 
+
         if (users.Count > 0)
         {
             foreach (UserModel u in users)
             {
-                u.UserId = u.UserId;
-                if (usernameEntered == u.Username)
+                if (usernameInputText == u.Username)
                 {
-                    if (passwordEntered == u.Password)
+                    UserModel user = u;
+                    string hashedPassword = HashPassword(user);
+
+                    if (CheckPassword(user, hashedPassword, passwordInputText) == PasswordVerificationResult.Success)
                     {
                         appState.LogIn(u);
                         navMan.NavigateTo("/", true);
@@ -82,5 +87,15 @@
                     loginFailed = true;                
             }
         }
+    }
+
+    private PasswordVerificationResult CheckPassword(UserModel user, string hashedPassword, string providedPassword)
+    {
+        return passwordHasher.VerifyHashedPassword(user, hashedPassword, providedPassword);
+    }
+
+    private string HashPassword(UserModel user)
+    {
+        return passwordHasher.HashPassword(user, passwordInputText);
     }
 }
