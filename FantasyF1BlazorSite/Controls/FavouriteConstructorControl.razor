@@ -33,7 +33,7 @@
 }
 
 @code {
-    ConstructorStandingsModel.Root constructor;
+    ConstructorStandingsModel.Root? constructor;
     bool apiError = false;
 
     protected override async Task OnInitializedAsync ()
@@ -47,8 +47,8 @@
         constructor = JsonConvert.DeserializeObject<ConstructorStandingsModel.Root>(json);
     }
 
-    public string GetConstructorLogo ()
+    public string GetConstructorLogo()
     {
-        return ConstructorLogoDictionary.GetLogoURL(appState.currentUser.FavouriteConstructorName);
+        return ConstructorLogoDictionary.GetLogoURL(appState.currentUser.FavouriteConstructorId);
     }
 }

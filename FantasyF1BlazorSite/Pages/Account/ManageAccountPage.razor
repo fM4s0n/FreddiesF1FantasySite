@@ -61,7 +61,7 @@
                 {
                     @foreach (var driver in drivers.MRData.StandingsTable.StandingsLists[0].DriverStandings)
                     {
-                        <option value="@driver.Driver.FullName" selected="@(driver.Driver.FullName == user.FavouriteDriverName)">@driver.Driver.FullName</option>
+                        <option value="@driver.Driver.DriverId" selected="@(driver.Driver.DriverId == user.FavouriteDriverId)">@driver.Driver.FullName</option>
                     }
                 }
             </select>
@@ -74,7 +74,7 @@
                 {
                     @foreach (var constructor in constructors.MRData.StandingsTable.StandingsLists[0].ConstructorStandings)
                     {
-                        <option value="@constructor.Constructor.Name" selected="@(constructor.Constructor.Name == user.FavouriteConstructorName)">@constructor.Constructor.Name</option>
+                        <option value="@constructor.Constructor.ConstructorId" selected="@(constructor.Constructor.ConstructorId == user.FavouriteConstructorId)">@constructor.Constructor.Name</option>
                     }
                 }
             </select>
@@ -138,15 +138,8 @@
             userVerified = false;        
     }
 
-    private void GetApiIds()
-    {
-        user.FavouriteDriverId = DriverIdDictionary.GetDriverId(user.FavouriteDriverName);
-        user.FavouriteConstructorId = ConstructorIdDictionary.GetConstructorID(user.FavouriteConstructorName);
-    }
-
     private async void UpdateAccount()
     {
-        GetApiIds();
         user.Password = HashPassword(newPasswordInputText);
         await userData.UpdateUserDetails(user);
         

@@ -107,6 +107,7 @@
         user.UserId = Guid.NewGuid().ToString();
 
         user.Password = HashPassword();
+        user.UserLevel = UserLevels.Standard;
 
         await userData.InsertUser(user);
 
