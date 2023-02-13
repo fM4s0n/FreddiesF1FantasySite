@@ -122,17 +122,14 @@ else
     }
 
     private void KickTeam(string teamId)
-    {
-        if(teamId is not null)
-        {
-            _selectedLeague.Teams.RemoveAll(t => t.TeamId == teamId);
+    {        
+        _selectedLeague.Teams.RemoveAll(t => t.TeamId == teamId);
 
-            FantasyTeamModel team = new();
-            team.TeamId = teamId;
-            team.LeagueId = "";
+        FantasyTeamModel team = new();
+        team.TeamId = teamId;
+        team.LeagueId = "";
 
-            teamData.UpdateTeamDetails(team);
-        }
+        teamData.UpdateTeamDetails(team);        
     }
 
     private void TogglePasswordEdit()

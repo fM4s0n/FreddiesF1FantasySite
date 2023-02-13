@@ -19,7 +19,7 @@
 {
     <label>Please re-enter you password</label>
     <input type="password" @bind="passwordInitialCheck"/>
-    <button type="button" @onclick="CheckInitialPassword">Next</button>
+    <button type="button" @onclick="VerifyInitialPassword">Next</button>
 
     @if (user is not null)
     {
@@ -46,7 +46,7 @@
             <br /><br />
 
             <label for="accountPassword">Password</label><br />
-            <input type="password" id="accountPassword" class="manage-account-input" @bind="passwordInputText" />
+            <input type="password" id="accountPassword" class="manage-account-input" @bind="newPasswordInputText" />
             <button type="button" @onclick="PasswordEditButtonToggle">Edit</button>
             <br /><br />
 
@@ -95,7 +95,7 @@
     DriverStandingsModel.Root? drivers;
     ConstructorStandingsModel.Root? constructors;
     UserModel user = new();
-    string passwordInputText = "";
+    string newPasswordInputText = "";
     string passwordEditCancelButtonText = "Edit";
     string passwordInitialCheck = "";
     bool? userVerified = null;
@@ -129,7 +129,7 @@
         return passwordHasher.VerifyHashedPassword(user, hashedPassword, unhashedPassword);
     }
 
-    private void CheckInitialPassword()
+    private void VerifyInitialPassword()
     {
         string initialHashedPassword = HashPassword(passwordInitialCheck);
         if(VerifyPassword(initialHashedPassword, passwordInitialCheck) == PasswordVerificationResult.Success)        
@@ -144,10 +144,10 @@
         user.FavouriteConstructorId = ConstructorIdDictionary.GetConstructorID(user.FavouriteConstructorName);
     }
 
-    private async void UpdateAccount ()
+    private async void UpdateAccount()
     {
         GetApiIds();
-        user.Password = HashPassword();
+        user.Password = HashPassword(newPasswordInputText);
         await userData.UpdateUserDetails(user);
         
         //refresh user info on page
