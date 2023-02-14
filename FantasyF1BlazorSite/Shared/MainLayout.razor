@@ -3,6 +3,8 @@
 
 @inherits LayoutComponentBase
 @inject AppStateService appState
+@inject NavigationManager navMan
+
 
 <PageTitle>FreddiesF1FantasySite</PageTitle>
 
@@ -18,7 +20,7 @@
             {
                 @*account page*@
                 <a href="/Account/Manage">My Account</a>
-                <a href="/" @onclick="@appState.LogOut">Log out</a>
+                <a href="/" @onclick="LogOut">Log out</a>
                 <a>Current user: @appState.currentUser.Username</a>
 
                 @if(appState.currentUser.UserLevel == UserLevels.Administrator)
@@ -38,5 +40,11 @@
     </main>
 </div>
 
-
+@code{
+    private void LogOut()
+    {
+        appState.LogOut();
+        navMan.NavigateTo("/", true);
+    }
+}
                  

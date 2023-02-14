@@ -156,7 +156,7 @@
     {
         usersOwnedTeams = await teamData.GetAllTeams();
 
-        foreach(var t in usersOwnedTeams)
+        foreach(var t in usersOwnedTeams.ToList())
         {
             if(t.OwnerId != appState.currentUser.UserId)
                 usersOwnedTeams.Remove(t);

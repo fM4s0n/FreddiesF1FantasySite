@@ -28,7 +28,7 @@ public class UserData : IUserData
     public Task InsertUser(UserModel user)
     {
         string sql = @"INSERT INTO dbo.tblUser (UserId, Username, Password, FullName, FavouriteDriverId, FavouriteConstructorId, FavouriteDriverName, FavouriteConstructorName, UserLevel)
-                       VALUES (@UserId, @Username, @Password, @FullName, @FavouriteDriverId, @FavouriteConstructorId, @FavouriteDriverName, @FavouriteConstructorName, @UserLevel);";
+                       VALUES (@UserId, @Username, @Password, @FullName, @FavouriteDriverId, @FavouriteConstructorId, @UserLevel);";
 
         return _db.SaveData(sql, user);
     }
@@ -36,8 +36,7 @@ public class UserData : IUserData
     public Task UpdateUserDetails(UserModel user)
     {
         string sql = @"UPDATE dbo.tblUser SET Username = @Username, Password = @Password, FullName = @FullName,
-                       FavouriteDriverId = @FavouriteDriverId, FavouriteConstructorId = @FavouriteConstructorId,
-                       FavouriteDriverName = @FavouriteDriverName, FavouriteConstructorName = @FavouriteConstructorName
+                       FavouriteDriverId = @FavouriteDriverId, FavouriteConstructorId = @FavouriteConstructorId 
                        WHERE Username = @Username";
 
         return _db.SaveData(sql, user);

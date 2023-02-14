@@ -11,67 +11,72 @@
 @inject NavigationManager navMan
 
 <h2>Join a league</h2>
-
-@if(allLeagues is not null)
+@if(setupDone)
 {
-    <form id="join-league">
-        <label>Enter league name</label>
-        <input type="text" @bind="leagueNameInput" />
-        <button type="button" @onclick="CheckLeagueExists">Next</button>
-        @if(leagueNotFound)
-        {
-            <p>League not found, please try again</p>
-        }
-        <br /><br />
+    @if(availableTeams.Count > 0)
+    {
+        <form id="join-league">
 
-
-        @if(leagueRequiresPassword)
-        {
-            <label>Enter league password</label>
-            <input type="text" @bind="leaguePasswordInput">
-            <button type="button" @onclick="CheckPassword">Next</button>
-            <br />
-
-            <br />
-        }
-
-        @if(showTeamsList == true)
-        {
-            <label>Select which team you want to join this league</label>
+            <label>Select which team you want to join a league</label>
 
             <select @bind="@selectedTeamId">
-                @foreach(FantasyTeamModel team in allUsersTeams)
+                @foreach(FantasyTeamModel team in availableTeams)
                 {
                     <option value="@team.TeamId">@team.Name</option>
                 }
             </select>
+            <button type="submit" @onclick="TeamSelected">Next</button>
 
-            <button type="submit" @onclick="JoinLeague">Join league</button>
-        }
-    </form>
+            @if(ShowLeagueInput)
+            {
+                <label>Enter league name</label>
+                <input type="text" @bind="leagueNameInput" />
+                <button type="button" @onclick="CheckLeagueExists">Next</button>
+                @if(leagueNotFound)
+                {
+                    <p>League not found, please try again</p>
+                }
+                <br />
+
+                <br />
+            }
+
+            @if(leagueRequiresPassword)
+            {
+                <label>Enter league password</label>
+                <input type="text" @bind="leaguePasswordInput">
+                <button type="button" @onclick="CheckPassword">Next</button>
+                <br />
+
+                <br />
+            }
+        </form>
+    }
+    else
+    {
+        <p>You do not currently have any teams that can join a league</p>
+        <p>Either create a new team or leave a league with a current team</p>
+    }
 }
 
 
-
 @code {
-    List<FantasyLeagueModel> allLeagues = new();
+    List<FantasyLeagueModel>? allLeagues;
     FantasyLeagueModel selectedLeague = new();
-
-    List<FantasyTeamModel> allUsersTeams = new();
+    List<FantasyTeamModel> availableTeams = new();
     string selectedTeamId = string.Empty;
-
     string leagueNameInput = "";
-
     bool leagueRequiresPassword = false;
     string leaguePasswordInput = "";
-    bool showTeamsList = false;
+    bool ShowLeagueInput = false;
     bool leagueNotFound = false;
-
+    bool setupDone = false;
 
     protected override async Task OnInitializedAsync()
     {
         allLeagues = await leagueData.GetAllLeagues();
         GetUsersTeams();
+        setupDone = true;
     }
 
     private void CheckLeagueExists()
@@ -90,7 +95,7 @@
                 }
 
                 else                
-                    showTeamsList = true;                
+                    ShowLeagueInput = true;                
             }
             else            
                 leagueNotFound = true;            
@@ -103,7 +108,7 @@
     private void CheckPassword()
     {
         if (selectedLeague.Password == leaguePasswordInput)
-            showTeamsList = true;
+            ShowLeagueInput = true;
         else
         {
             //display error message
@@ -115,10 +120,15 @@
     /// </summary>
     private async void GetUsersTeams()
     {
-        allUsersTeams = await teamData.GetAllTeams();
+        availableTeams = await teamData.GetAllTeams();
 
         //remove any team that are already part of a league
-        allUsersTeams = allUsersTeams.Where(t => t.OwnerId == appState.currentUser.UserId && t.LeagueId == "").ToList();
+        availableTeams = availableTeams.Where(t => t.OwnerId == appState.currentUser.UserId && t.LeagueId == "").ToList();
+    }
+
+    private void TeamSelected()
+    {
+        ShowLeagueInput = true;
     }
 
     /// <summary>
@@ -126,7 +136,7 @@
     /// </summary>
     private void JoinLeague()
     {
-        FantasyTeamModel selectedTeam = allUsersTeams.Where(t => t.TeamId == selectedTeamId).FirstOrDefault();
+        FantasyTeamModel selectedTeam = availableTeams.Where(t => t.TeamId == selectedTeamId).FirstOrDefault();
 
         //update team object with league id in the db
         selectedTeam.LeagueId = selectedLeague.LeagueId;
